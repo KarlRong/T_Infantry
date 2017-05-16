@@ -49,6 +49,8 @@ extern float yawRealAngle;
 extern uint8_t GYRO_RESETED;
 extern float pitchRealAngle;
 extern float gYroZs;
+extern float yawAngleTarget;
+extern float yawRealAngle;
 //*********debug by ZY*********
 typedef struct{
 	uint16_t head;
@@ -136,7 +138,7 @@ void Timer_2ms_lTask(void const * argument)
 //			fw_printfln("ZGyroModuleAngle:  %f",ZGyroModuleAngle);
 //			fw_printfln("YawAngle= %d", IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
 //			fw_printfln("GMYawEncoder.ecd_angle:%f",GMYawEncoder.ecd_angle);
-//			fw_printfln("PitAngle= %f", pitchRealAngle);
+//			fw_printfln("PitAngle= %d", IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle);
 //				fw_printfln("GMYAWEncoder.ecd_angle:%f",GMYawEncoder.ecd_angle );
 //			fw_printfln("in CMcontrol_task");
 //		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );
@@ -146,16 +148,18 @@ void Timer_2ms_lTask(void const * argument)
 		}
 //陀螺仪复位计时
     if(countwhile1 > 2500){
-			if(GYRO_RESETED == 0)GYRO_RST();
+			if(GYRO_RESETED == 0)GYRO_RST();//给单轴陀螺仪将当前位置写零
 		}
 		else{countwhile1++;}
 		if(countwhile1 > 4000){
-			GYRO_RESETED = 2;
+			GYRO_RESETED = 2;//正常遥控器或者键盘控制模式，底盘跟随模式
 		}
 		else{countwhile1++;}
 //10ms循环
-		if(countwhile2 >= 5){//定时 10MS
+		if(countwhile2 >= 50){//定时 100MS
 		countwhile2 = 0;
+		//fw_printfln("yawRealAngle:%f",yawRealAngle);	
+			
 //		send_data_to_PC(&DEBUG_UART,pitchRealAngle,ZGyroModuleAngle, gYroZs);//发送数据到上位机看波形
 			//printf("pitch:%f *** yaw:%f",pitchRealAngle,ZGyroModuleAngle);
 //		HAL_UART_Transmit(&DEBUG_UART,txbuf,strlen((char *)txbuf),1000);

@@ -11,7 +11,6 @@
 #include "peripheral_define.h"
 #include "pwm_server_motor.h"
 #include "tasks_motor.h"
-#include "utilities_minmax.h"
 #define VAL_LIMIT(val, min, max)\
 if(val<=min)\
 {\
@@ -26,16 +25,17 @@ else if(val>=max)\
 extern ChassisSpeed_Ref_t ChassisSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
 extern FrictionWheelState_e friction_wheel_state ;
-static RemoteSwitch_t switch1;   //é¥æŽ§å™¨å·¦ä¾§æ‹¨æ†
+static RemoteSwitch_t switch1;   //Ò£¿ØÆ÷×ó²à²¦¸Ë
 
-extern RampGen_t frictionRamp ;  //æ‘©æ“¦è½®æ–œå¡
-extern RampGen_t LRSpeedRamp ;   //mouseå·¦å³ç§»åŠ¨æ–œå¡
-extern RampGen_t FBSpeedRamp  ;   //mouseå‰åŽç§»åŠ¨æ–œå¡
+extern RampGen_t frictionRamp ;  //Ä¦²ÁÂÖÐ±ÆÂ
+extern RampGen_t LRSpeedRamp ;   //mouse×óÓÒÒÆ¶¯Ð±ÆÂ
+extern RampGen_t FBSpeedRamp  ;   //mouseÇ°ºóÒÆ¶¯Ð±ÆÂ
 
 extern RC_Ctl_t RC_CtrlData; 
 extern xSemaphoreHandle xSemaphore_rcuart;
 extern float yawAngleTarget, pitchAngleTarget;
 extern uint8_t GYRO_RESETED ;
+extern int twist_state ;
 void RControlTask(void const * argument){
 	uint8_t data[18];
 	static int countwhile = 0;
@@ -54,12 +54,12 @@ void RControlTask(void const * argument){
 					data[i] = pData[i];
 				}
 
-//é¥æŽ§å™¨æ•°æ®å¤„ç†
+//Ò£¿ØÆ÷Êý¾Ý´¦Àí
 				RemoteDataProcess(data);
 				
 				HAL_UART_AbortReceive(&RC_UART);
 				HAL_UART_Receive_DMA(&RC_UART, IOPool_pGetWriteData(rcUartIOPool)->ch, 18);
-				if(countwhile >= 400){
+				if(countwhile >= 300){
 				countwhile = 0;
 	//			fw_printf("ch0 = %d | ", RC_CtrlData.rc.ch0);
 	//				fw_printf("ch1 = %d | ", RC_CtrlData.rc.ch1);
@@ -132,23 +132,23 @@ void RemoteDataProcess(uint8_t *pData)
 		case KEY_MOUSE_INPUT:
 		{
 			
-			//é¼ æ ‡é”®ç›˜æŽ§åˆ¶æ¨¡å¼
-			//æš‚æ—¶ä¸ºè‡ªåŠ¨çž„å‡†æ¨¡å¼
+			//Êó±ê¼üÅÌ¿ØÖÆÄ£Ê½
+			//ÔÝÊ±Îª×Ô¶¯Ãé×¼Ä£Ê½
 							if(GYRO_RESETED == 2){
 			MouseKeyControlProcess(&RC_CtrlData.mouse,&RC_CtrlData.key);
 			SetEmergencyFlag(NORMAL);
-  		SetShootMode(AUTO);
+//			SetShootMode(AUTO);
 //			RemoteShootControl(&switch1, RC_CtrlData.rc.s1);
 		  }
 		}break;
 		case STOP:
 		{
 			SetEmergencyFlag(EMERGENCY);
-			//ç´§æ€¥åœè½¦
+			//½ô¼±Í£³µ
 		}break;
 	}
 }
-//é¥æŽ§å™¨æŽ§åˆ¶æ¨¡å¼å¤„ç†
+//Ò£¿ØÆ÷¿ØÖÆÄ£Ê½´¦Àí
 void RemoteControlProcess(Remote *rc)
 {
     if(GetWorkState()!=PREPARE_STATE)
@@ -156,21 +156,6 @@ void RemoteControlProcess(Remote *rc)
 			SetShootMode(MANUL);
         ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
         ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
-			MINMAX(rc->ch2, 480, 1520);
-			if ((rc->ch2 < 480) || (rc->ch2 > 1520)){
-				if(ChassisSpeedRef.forward_back_ref > 400){
-				 ChassisSpeedRef.forward_back_ref =  400 +  (ChassisSpeedRef.forward_back_ref - 400) * 0.15f;
-				}
-				else if(ChassisSpeedRef.forward_back_ref < -400){
-					ChassisSpeedRef.forward_back_ref =  -400 +  (ChassisSpeedRef.forward_back_ref + 400) * 0.15f;
-				}
-				if(ChassisSpeedRef.left_right_ref > 400){
-				 ChassisSpeedRef.left_right_ref =  400 +  (ChassisSpeedRef.left_right_ref - 400) * 0.15f;
-				}
-				else if(ChassisSpeedRef.left_right_ref < -400){
-					ChassisSpeedRef.left_right_ref =  -400 +  (ChassisSpeedRef.left_right_ref + 400) * 0.15f;
-				}
-			}
 			if(GetShootMode() == MANUL){  
 			pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
       yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
@@ -190,14 +175,14 @@ void RemoteControlProcess(Remote *rc)
 		}
 	
 	/* not used to control, just as a flag */ 
-    GimbalRef.pitch_speed_ref = rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET;    //speed_refä»…åšè¾“å…¥é‡åˆ¤æ–­ç”¨
+    GimbalRef.pitch_speed_ref = rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET;    //speed_ref½ö×öÊäÈëÁ¿ÅÐ¶ÏÓÃ
     GimbalRef.yaw_speed_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET);
-	//å°„å‡»-æ‘©æ“¦è½®ï¼Œæ‹¨ç›˜ç”µæœºçŠ¶æ€
+	//Éä»÷-Ä¦²ÁÂÖ£¬²¦ÅÌµç»ú×´Ì¬
 	RemoteShootControl(&switch1, rc->s1);
 		
 
 }
-//é”®ç›˜é¼ æ ‡æŽ§åˆ¶æ¨¡å¼å¤„ç†
+//¼üÅÌÊó±ê¿ØÖÆÄ£Ê½´¦Àí
 
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -230,10 +215,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v & 0x01)  // key: w
 		{
 			ChassisSpeedRef.forward_back_ref = forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
+			twist_state = 0;
 		}
 		else if(key->v & 0x02) //key: s
 		{
 			ChassisSpeedRef.forward_back_ref = -forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
+			twist_state = 0;
 		}
 		else
 		{
@@ -245,10 +232,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v & 0x04)  // key: d
 		{
 			ChassisSpeedRef.left_right_ref = -left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
+			twist_state = 0;
 		}
 		else if(key->v & 0x08) //key: a
 		{
 			ChassisSpeedRef.left_right_ref = left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
+			twist_state = 0;
 		}
 		else
 		{
@@ -259,9 +248,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v == 8192)//c
 		{
 			if(GetSlabState() == CLOSE)
-		{
+			{
 #ifdef Infantry_3
-				pwm_server_motor_set_angle(0,30.f);
+				pwm_server_motor_set_angle(0,0.f);
 #endif
 #ifdef Infantry_2
 				pwm_server_motor_set_angle(0,50.f);
@@ -280,7 +269,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			if(GetSlabState() == OPEN)
 			{
 #ifdef Infantry_3
-				pwm_server_motor_set_angle(0,180.f);
+				pwm_server_motor_set_angle(0,110.f);
 #endif
 #ifdef Infantry_2
 				pwm_server_motor_set_angle(0,180.f);
@@ -289,7 +278,16 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			//fw_printfln("CLOSE");	
 			}
 		}
-
+			//½øÐÐÅ¤ÑüÓë¹Ø±ÕÅ¤Ñü
+		if(key->v == 256)  // key: r
+		{
+			twist_state = 1;
+		}
+		if(key->v == 272)  // key: r+Shift
+		{
+			twist_state = 0;
+		}
+		
 		
 	
 	//step2: gimbal ref calc
@@ -304,7 +302,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	}
 	*/
 	/* not used to control, just as a flag */ 
-    GimbalRef.pitch_speed_ref = mouse->y;    //speed_refä»…åšè¾“å…¥é‡åˆ¤æ–­ç”¨
+    GimbalRef.pitch_speed_ref = mouse->y;    //speed_ref½ö×öÊäÈëÁ¿ÅÐ¶ÏÓÃ
     GimbalRef.yaw_speed_ref   = mouse->x;
 	  MouseShootControl(mouse);
 	}

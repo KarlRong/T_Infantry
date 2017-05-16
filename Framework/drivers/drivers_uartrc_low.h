@@ -14,13 +14,13 @@ void rcInit(void);
 ****************************************************************************
 */
 #define PITCH_MAX 19.0f
-#define YAW_MAX 720.0f//720.0				//cyq:äº‘å°è§’åº¦çš„èŒƒå›´
+#define YAW_MAX 720.0f//720.0				//cyq:ÔÆÌ¨½Ç¶ÈµÄ·¶Î§
 //remote control parameters
 #define REMOTE_CONTROLLER_STICK_OFFSET      1024u   
 #define RC_FRAME_LENGTH                     18u
 #define STICK_TO_CHASSIS_SPEED_REF_FACT     0.45f
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.008f
-#define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
+#define STICK_TO_YAW_ANGLE_INC_FACT         0.008f
 #define FRICTION_WHEEL_MAX_DUTY             1400
 
 //mouse control parameters
@@ -28,9 +28,9 @@ void rcInit(void);
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
 
 #define NORMAL_FORWARD_BACK_SPEED 			500
-#define NORMAL_LEFT_RIGHT_SPEED   			550
+#define NORMAL_LEFT_RIGHT_SPEED   			700
 #define HIGH_FORWARD_BACK_SPEED 			660
-#define HIGH_LEFT_RIGHT_SPEED   			700
+#define HIGH_LEFT_RIGHT_SPEED   			800
 #define LOW_FORWARD_BACK_SPEED 			100
 #define LOW_LEFT_RIGHT_SPEED   			130
 
@@ -101,7 +101,7 @@ typedef enum
 
 
 
-//è¾“å…¥æ¨¡å¼:é¥æ§å™¨/é”®ç›˜é¼ æ ‡/åœæ­¢è¿è¡Œ
+//ÊäÈëÄ£Ê½:Ò£¿ØÆ÷/¼üÅÌÊó±ê/Í£Ö¹ÔËĞĞ
 typedef enum
 {
 	REMOTE_INPUT = 1,
@@ -109,7 +109,7 @@ typedef enum
 	STOP = 2,
 }InputMode_e;
 
-//æ‘©æ“¦è½®çŠ¶æ€æšä¸¾
+//Ä¦²ÁÂÖ×´Ì¬Ã¶¾Ù
 typedef enum
 {
 	FRICTION_WHEEL_OFF = 0,
@@ -117,7 +117,7 @@ typedef enum
 	FRICTION_WHEEL_ON = 2,
 }FrictionWheelState_e;
 
-//æ‹¨æ†åŠ¨ä½œæšä¸¾
+//²¦¸Ë¶¯×÷Ã¶¾Ù
 typedef enum
 {
 	FROM1TO2,
