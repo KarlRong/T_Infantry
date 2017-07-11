@@ -1,3 +1,16 @@
+/**
+  ******************************************************************************
+  * File Name          : pdrivers_uartjudge.c
+  * Description        : 裁判系统读取
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 单字节阻塞读取
+	* 获得能量槽用于功率限制
+  ******************************************************************************
+  */
 #include "drivers_uartjudge_low.h"
 #include "utilities_debug.h"
 #include "usart.h"
@@ -109,7 +122,7 @@ uint32_t myVerify_CRC16_Check_Sum(uint8_t *pchMessage, uint32_t dwLength)
 }
 
 uint8_t tmp_judge;
-void judgeUartInit(void){
+void InitJudgeUart(void){
 	if(HAL_UART_Receive_DMA(&JUDGE_UART, &tmp_judge, 1) != HAL_OK){
 			Error_Handler();
 	}
@@ -119,21 +132,28 @@ uint8_t received = 0;
 uint8_t buffer[44] = {0}; 
 uint8_t buffercnt = 0;
 
-void judgeUartRxCpltCallback(void){
+void judgeUartRxCpltCallback(void)
+{
 //	fw_printfln("judge receive");
-			if(receiving) 
+		if(receiving) 
 		{
 			buffer[buffercnt] = tmp_judge;
 			buffercnt++;
 			
 			if(buffercnt == 5)
 			{
-				if (myVerify_CRC8_Check_Sum(buffer, 5)==0) {receiving = 0;buffercnt = 0;}
+				if (myVerify_CRC8_Check_Sum(buffer, 5)==0) 
+				{
+				receiving = 0;buffercnt = 0;
+				}
 			}
 			
 			if(buffercnt == 44)
 			{
-				if (myVerify_CRC16_Check_Sum(buffer, 44)) Judge_Refresh();
+				if (myVerify_CRC16_Check_Sum(buffer, 44)) 
+				{
+					Judge_Refresh();
+				}
 				receiving = 0;
 				buffercnt = 0;
 			}
@@ -148,14 +168,15 @@ void judgeUartRxCpltCallback(void){
 				buffercnt++;
 			}
 		}
-		if(HAL_UART_Receive_DMA(&JUDGE_UART, &tmp_judge, 1) != HAL_OK){
+		if(HAL_UART_Receive_DMA(&JUDGE_UART, &tmp_judge, 1) != HAL_OK)
+		{
 			Error_Handler();
-	}
+	  }
 }
 
 tGameInfo mytGameInfo;
 uint8_t JUDGE_Received = 0;
-uint8_t JUDGE_State = 1;
+JudgeState_e JUDGE_State = OFFLINE;
 
 void Judge_Refresh(void)
 {
@@ -184,7 +205,7 @@ void Judge_Refresh(void)
   for(int i = 0; i<4; i++){
       b[i] = (unsigned char)c[i];
   }
- // fw_printf("remainPower: %f \r\n",mytGameInfo.remainPower);
+//  fw_printf("remainPower: %f \r\n",mytGameInfo.remainPower);
 	
 	
 	JUDGE_Received = 1;

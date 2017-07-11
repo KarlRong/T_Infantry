@@ -1,3 +1,17 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_uartrc.c
+  * Description        : 遥控器串口
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 串口初始化
+	* 串口数据读取
+	* 数据处理函数
+  ******************************************************************************
+  */
 #include "drivers_uartrc_user.h"
 #include "drivers_uartrc_low.h"
 #include "drivers_led_user.h"
@@ -21,34 +35,24 @@
 #include "stm32f4xx_hal_uart.h"
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
-void rcInit(){
+void InitRemoteControl(){
 	//遥控器DMA接收开启(一次接收18个字节)
 	if(HAL_UART_Receive_DMA(&RC_UART, IOPool_pGetWriteData(rcUartIOPool)->ch, 18) != HAL_OK){
 			Error_Handler();
 	} 
-//	__HAL_UART_ENABLE_IT(&RC_UART, UART_FLAG_IDLE);
+//	__HAL_UART_ENABLE_IT(&RC_UART, UART_FLAG_IDLE);//空闲中断方式更优，未调通
 	RemoteTaskInit();
 }
 
 void rcUartRxCpltCallback(){
 	static portBASE_TYPE xHigherPriorityTaskWoken;
 	 xHigherPriorityTaskWoken = pdFALSE; 
-//	static HAL_UART_StateTypeDef uart_state;
-//	fw_printfln("flag: %x",__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_RXNE));
-//	while(__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE) == 0){
-//		fw_Warning();
-//	}
-//	__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE);
-//	fw_printfln("flag1: %d",__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE));
-//	__HAL_UART_CLEAR_PEFLAG(&RC_UART);
-//	fw_printfln("flag12: %d",__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE));
-//	fw_printfln("flag: %x",__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_IDLE));
-//	 while(__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_IDLE) == 0)
-//   {}
-//	__HAL_UART_CLEAR_FLAG(&RC_UART, UART_FLAG_IDLE);
-//	fw_printfln("flag2: %x",__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_IDLE));
-//	fw_printfln("(thiscount_rc - lastcount_rc):  %d", (thiscount_rc - lastcount_rc));
+	//释放信号量
    xSemaphoreGiveFromISR(xSemaphore_rcuart, &xHigherPriorityTaskWoken);
+	//切换上下文，RTOS提供
+	//当在中断外有多个不同优先级任务等待信号量时
+	//在退出中断前进行一次切换上下文
+	//这里无用
 	if( xHigherPriorityTaskWoken == pdTRUE ){
    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	 }
@@ -70,20 +74,18 @@ RampGen_t FBSpeedRamp = RAMP_GEN_DAFAULT;
 
 void RemoteTaskInit()
 {
-
+  /*斜坡初始化，copy from官方程序，实现被封装在RMLib*/
 	frictionRamp.SetScale(&frictionRamp, FRICTION_RAMP_TICK_COUNT);
 	LRSpeedRamp.SetScale(&LRSpeedRamp, MOUSE_LR_RAMP_TICK_COUNT);
 	FBSpeedRamp.SetScale(&FBSpeedRamp, MOUSR_FB_RAMP_TICK_COUNT);
 	frictionRamp.ResetCounter(&frictionRamp);
 	LRSpeedRamp.ResetCounter(&LRSpeedRamp);
 	FBSpeedRamp.ResetCounter(&FBSpeedRamp);
-
-	GimbalRef.pitch_angle_dynamic_ref = 0.0f;
-	GimbalRef.yaw_angle_dynamic_ref = 0.0f;
+  /*底盘速度初始化*/
 	ChassisSpeedRef.forward_back_ref = 0.0f;
 	ChassisSpeedRef.left_right_ref = 0.0f;
 	ChassisSpeedRef.rotate_ref = 0.0f;
-
+  /*摩擦轮*/
 	SetFrictionState(FRICTION_WHEEL_OFF);
 }
 /*拨杆数据处理*/
@@ -159,11 +161,12 @@ InputMode_e GetInputMode()
 /*
 input: RemoteSwitch_t *sw, include the switch info
 */
-#ifdef Infantry_4
+#ifdef INFANTRY_1
 #define FRICTION_WHEEL_MAX_DUTY             1500
 #endif
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
+	/*左上角拨杆状态获取*/
 	GetRemoteSwitchAction(sw, val);
 	switch(friction_wheel_state)
 	{
@@ -189,6 +192,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			}
 			else
 			{
+				/*斜坡函数必须有，避免电流过大烧坏主控板*/
 				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
@@ -255,7 +259,7 @@ void MouseShootControl(Mouse *mouse)
 			}
 			else
 			{
-				//				
+		    /*摩擦轮转速修改 FRICTION_WHEEL_MAX_DUTY*/
 				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
@@ -274,7 +278,6 @@ void MouseShootControl(Mouse *mouse)
 			{
 				closeDelayCount = 0;
 			}
-			
 			if(closeDelayCount>50)   //
 			{
 				LASER_OFF();
@@ -296,10 +299,6 @@ void MouseShootControl(Mouse *mouse)
 	mouse->last_press_r = mouse->press_r;
 	mouse->last_press_l = mouse->press_l;
 }
-
-
-
-
 
 
 Shoot_State_e GetShootState()

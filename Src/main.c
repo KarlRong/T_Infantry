@@ -115,7 +115,7 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+  MX_FREERTOS_Init();//程序开始的地方
 
   /* Start scheduler */
   osKernelStart();

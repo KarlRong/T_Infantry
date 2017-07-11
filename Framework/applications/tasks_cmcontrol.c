@@ -1,10 +1,23 @@
-#include "tasks_cmcontrol.h"
+/**
+  ******************************************************************************
+  * File Name          : tasks_cmcontrol.c
+  * Description        : 2ms定时任务
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+	* 2ms定时
+	* 通过count可以获得500ms,1s等定时任务
+	* 状态机切换，串口定时输出，看门狗等
+  ******************************************************************************
+  */
+#include "tasks_timed.h"
 #include "pid_Regulator.h"
 #include "drivers_uartrc_low.h"
 #include "drivers_uartrc_user.h"
 #include "tasks_remotecontrol.h"
 #include "application_motorcontrol.h"
-#include "tasks_cmcontrol.h"
 #include "drivers_canmotor_low.h"
 #include "drivers_canmotor_user.h"
 #include "utilities_debug.h"
@@ -155,7 +168,6 @@ int stuck = 0;	//卡弹标志位，未卡弹为false，卡弹为true
 
 extern uint8_t JUDGE_Received;
 extern uint8_t JUDGE_State;
-static int count_reverse = 200;
 
 void Timer_2ms_lTask(void const * argument)
 {
@@ -165,7 +177,8 @@ void Timer_2ms_lTask(void const * argument)
 	static int countwhile1 = 0;
 	static int countwhile2 = 0;
 //	static int countwhile3 = 0;
-
+	ShootMotorPositionPID.ref = 0x0;
+	ShootMotorPositionPID.fdb = 0x0;
 	static int count_judge = 0;
 	//static int shootwhile = 0;
 //	unsigned portBASE_TYPE StackResidue; //栈剩余
@@ -251,34 +264,6 @@ void Timer_2ms_lTask(void const * argument)
        JUDGE_State = 1;
 			}
 		}
-		
-//		if(countwhile3 >=25 && GetShootState() == SHOOTING){//50ms 30pulse->300ms 180pulse
-//			countwhile3 = 0;
-//			//先检测是否卡弹，而后根据情况更新拨盘电机PID	
-//			if(EncoderCnt<3){		//产生卡弹
-//				//清空计数器
-//				//EncoderCnt = 0;			
-//				//卡弹之后直接反转
-//				stuck = 1;
-
-//			}
-//			else{	
-//				stuck = 0;
-//			}
-//			//更新PID
-//			//stuckConditionUpdate(bool stuck);
-//			ShootMotorSpeedPID.ref = PID_SHOOT_MOTOR_SPEED;
-//			fw_printfln("ref = %d",PID_SHOOT_MOTOR_SPEED);
-//			ShootMotorSpeedPID.fdb = EncoderCnt;
-//			fw_printfln("fdb = %d",EncoderCnt);
-//			EncoderCnt = 0;
-//				//ShootMotorSpeedPID.ref = PID_SHOOT_MOTOR_SPEED;
-//			ShootMotorSpeedPID.output = 1*(ShootMotorSpeedPID.ref-ShootMotorSpeedPID.fdb);
-//				//ShootMotorSpeedPID.Calc(&ShootMotorSpeedPID);
-//		}
-//		else countwhile3++;	
-		
-
 		
 		ShooterMControlLoop();       //发射机构控制任务
 		
@@ -381,111 +366,33 @@ void WorkStateSwitchProcess(void)
 }
 //底盘控制任务 没用到
 extern int16_t yawZeroAngle;
-void CMControlLoop(void)
-{  
-	//底盘旋转量计算
-	if(GetWorkState()==PREPARE_STATE) //启动阶段，底盘不旋转
-	{
-		ChassisSpeedRef.rotate_ref = 0;	 
-	}
-	else
-	{
-		 //底盘跟随编码器旋转PID计算
-		 CMRotatePID.ref = 48;
-		 CMRotatePID.fdb = GMYawEncoder.ecd_angle;
-//		fw_printfln("%f",GMYawEncoder.ecd_angle );
-		 CMRotatePID.Calc(&CMRotatePID);   
-		 ChassisSpeedRef.rotate_ref = CMRotatePID.output;
-		 ChassisSpeedRef.rotate_ref = 0;
-	}
-/*	if(Is_Lost_Error_Set(LOST_ERROR_RC))      //如果遥控器丢失，强制将速度设定值reset
-	{
-		ChassisSpeedRef.forward_back_ref = 0;
-		ChassisSpeedRef.left_right_ref = 0;
-	}
-*/	
-	CM1SpeedPID.ref =  -ChassisSpeedRef.forward_back_ref*0.075 + ChassisSpeedRef.left_right_ref*0.075 + ChassisSpeedRef.rotate_ref;
-	CM2SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 + ChassisSpeedRef.left_right_ref*0.075 + ChassisSpeedRef.rotate_ref;
-	CM3SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 - ChassisSpeedRef.left_right_ref*0.075 + ChassisSpeedRef.rotate_ref;
-	CM4SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 - ChassisSpeedRef.left_right_ref*0.075 + ChassisSpeedRef.rotate_ref;
 
-	CM1SpeedPID.fdb = CM1Encoder.filter_rate;
-	CM2SpeedPID.fdb = CM2Encoder.filter_rate;
-	CM3SpeedPID.fdb = CM3Encoder.filter_rate;
-	CM4SpeedPID.fdb = CM4Encoder.filter_rate;
-	
-	CM1SpeedPID.Calc(&CM1SpeedPID);
-	CM2SpeedPID.Calc(&CM2SpeedPID);
-	CM3SpeedPID.Calc(&CM3SpeedPID);
-	CM4SpeedPID.Calc(&CM4SpeedPID);
-	
-	 if((GetWorkState() == STOP_STATE)  || GetWorkState() == CALI_STATE || GetWorkState() == PREPARE_STATE || GetEmergencyFlag() == EMERGENCY)   //||Is_Serious_Error()|| dead_lock_flag == 1紧急停车，编码器校准，无控制输入时都会使底盘控制停止
-	 {
-		 Set_CM_Speed(0,0,0,0);
-	 }
-	 else
-	 {
-		 Set_CM_Speed(CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output, CHASSIS_SPEED_ATTENUATION * CM3SpeedPID.output, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);		 
-	 } 
-	 
-}
   
 int32_t GetQuadEncoderDiff(void)
 {
   int32_t cnt = 0;    
-	cnt = __HAL_TIM_GET_COUNTER(&htim5) - 0x7fff;
-	fw_printfln("%x",cnt);
-	 __HAL_TIM_SET_COUNTER(&htim5, 0x7fff);
+	cnt = __HAL_TIM_GET_COUNTER(&htim5) - 0x0;
+	//fw_printfln("%x",cnt);
+	 //__HAL_TIM_SET_COUNTER(&htim5, 0x7fff);
 	return cnt;
 }
 
 int RotateAdd = 0;
-int refSave = 0;
 int Stuck = 0;
-int reverse_sum = 0;
-
+int32_t last_fdb = 0x0;
+int32_t this_fdb = 0;
 void ShooterMControlLoop(void)	
-{				      
-	//鼠标键盘输入模式下，单击一下鼠标，拨盘转动一个扇区
+{				      			
 	if(GetShootState() == SHOOTING && GetInputMode()==KEY_MOUSE_INPUT && Stuck==0)
 	{
-		ShootMotorPositionPID.ref = ShootMotorPositionPID.ref+OneShoot;//打一发弹编码器输出脉冲数*4
+		ShootMotorPositionPID.ref = ShootMotorPositionPID.ref+OneShoot;//打一发弹编码器输出脉冲数
 	}
-/*
-//		if(inShooting == 0){
-//			HAL_GPIO_WritePin(PM_Dir_Ctrl1_GPIO_Port,PM_Dir_Ctrl1_Pin,GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(PM_Dir_Ctrl2_GPIO_Port,PM_Dir_Ctrl2_Pin,GPIO_PIN_RESET);
-//			++inShooting;
-//		}
-//		
-//		if(stuck==1){
-//			HAL_GPIO_TogglePin(PM_Dir_Ctrl1_GPIO_Port,PM_Dir_Ctrl1_Pin);
-//			HAL_GPIO_TogglePin(PM_Dir_Ctrl2_GPIO_Port,PM_Dir_Ctrl2_Pin);
-//			stuck = 0;
-//		}
-//		
-//		temp = (temp + ShootMotorSpeedPID.output);//
-//		//fw_printfln("PID_Output = %f",ShootMotorSpeedPID.output);
-//		fw_printfln("temp: %d",temp);
-//		ShootMotorSpeedPID.output = 0;
-//		
-//		if(temp>800) temp = 800;//700
-//		else if(temp<0) temp = 0;
-//		TIM4->CCR1 = temp;//500100
-//		
-//	}
-//	else
-//	{	
-//		inShooting = 0;
-//		ShootMotorSpeedPID.ref = 0;		
-//		TIM4->CCR1 = 0;
-//		//fw_printfln("NoShooting");
-//	}
-*/		
+
 	//遥控器输入模式下，只要处于发射态，就一直转动
 	if(GetShootState() == SHOOTING && GetInputMode() == REMOTE_INPUT && Stuck==0)
 	{
-		RotateAdd += 5;
+		RotateAdd += 8;
+		fw_printfln("ref = %f",ShootMotorPositionPID.ref);
 		if(RotateAdd>OneShoot)
 		{
 			ShootMotorPositionPID.ref = ShootMotorPositionPID.ref+OneShoot;
@@ -496,55 +403,36 @@ void ShooterMControlLoop(void)
 	{
 		RotateAdd = 0;
 	}
-	
-	
-	
+
 	if(GetFrictionState()==FRICTION_WHEEL_ON)//拨盘转动前提条件：摩擦轮转动
 	{
-		ShootMotorPositionPID.fdb = GetQuadEncoderDiff(); 
-		if(ShootMotorPositionPID.ref>50 && ShootMotorPositionPID.fdb<5 && Stuck==0)//检测到卡弹，参数需要优化
+		this_fdb = GetQuadEncoderDiff(); 
+		fw_printfln("this_fdb = %d",this_fdb);
+		if(this_fdb<last_fdb-100)
 		{
-			Stuck = 1;
+			ShootMotorPositionPID.fdb = ShootMotorPositionPID.fdb+(65535+this_fdb-last_fdb);
+		}
+		else
+			ShootMotorPositionPID.fdb = ShootMotorPositionPID.fdb + this_fdb-last_fdb;
+		
+		last_fdb = this_fdb;
+		fw_printfln("fdb = %f",ShootMotorPositionPID.fdb);
+		ShootMotorPositionPID.Calc(&ShootMotorPositionPID);
+		
+		if(ShootMotorPositionPID.output<0) //反馈大于参考，需要反转
+		{
 			setPlateMotorDir(REVERSE);
-			ShootMotorPositionPID.ref = ShootMotorPositionPID.ref - ShootMotorPositionPID.fdb;
-//			refSave = ShootMotorPositionPID.ref;
+			ShootMotorPositionPID.output = -ShootMotorPositionPID.output;
 		}
-		else if(Stuck == 0)//无卡弹
-		{
-			ShootMotorPositionPID.ref = ShootMotorPositionPID.ref - ShootMotorPositionPID.fdb;
-			ShootMotorPositionPID.Calc(&ShootMotorPositionPID);
-			fw_printfln("%d",(uint32_t)ShootMotorPositionPID.output);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, ShootMotorPositionPID.output);
-		}
-		else//卡弹
-		{
-			if(count_reverse>0){
-				--count_reverse;
-				reverse_sum = reverse_sum + ShootMotorPositionPID.fdb;
-				__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 800);
-			}
-			else
-			{
-				count_reverse = 200;
-				Stuck = 0;
-				setPlateMotorDir(FORWARD);
-				ShootMotorPositionPID.ref = ShootMotorPositionPID.ref - reverse_sum;
-			}
-		}
+		else
+			setPlateMotorDir(FORWARD);
+		
+		__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, ShootMotorPositionPID.output);
 	}
+	
 	else
 	{
-		__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
+		__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);//摩擦轮不转，立刻关闭拨盘
 	}
 }
 
-
-//int stuckCnt = 0;
-//int stuckConditionUpdate(bool stuck){
-//	if(stuck==1) ++stuckCnt;
-//	return stuckCnt;
-//}
-
-//bool isFirstStuck(){
-//	return stuckCnt==0?true:false;
-//}

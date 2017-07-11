@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_sonar.c
+  * Description        : 超声测距传感器驱动
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 超声测距，步兵未用到
+  ******************************************************************************
+  */
 //#include "drivers_sonar_low.h"
 //#include "drivers_sonar_user.h"
 

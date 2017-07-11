@@ -1,19 +1,20 @@
 /**
   ******************************************************************************
-  * File Name          : drivers_buzzer_low.h
-  * Description        : 蜂鸣器驱动函数
+  * File Name          : tasks_platemotor.h
+  * Description        : 拨盘电机任务
   ******************************************************************************
   *
   * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
   * All rights reserved.
   *
-  * 蜂鸣器底层函数
+	* 定时循环
+	* 编码器模式对编码器脉冲计数
+	* PWM波控制速度
   ******************************************************************************
   */
-#ifndef DRIVERS_BUZZER_LOW_H
-#define DRIVERS_BUZZER_LOW_H
+#ifndef FRAMEWORK_TASKS_PLATECONTROL_H
+#define FRAMEWORK_TASKS_PLATECONTROL_H
 
-void playMusicWhenInit(void);
-void buzzerTask(void const * argument);
+#include "cmsis_os.h"
 
 #endif

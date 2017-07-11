@@ -1,3 +1,17 @@
+/**
+  ******************************************************************************
+  * File Name          : pid_regulator.h
+  * Description        : PID函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 两套函数
+	* fw_前缀为队伍自己编写
+	* 无前缀为官方PID，实现封装在RMLib.lib
+  ******************************************************************************
+  */
 #ifndef _PID_REGULATOR_H_
 #define _PID_REGULATOR_H_
 #include "stm32f4xx.h"
@@ -59,6 +73,8 @@ typedef struct PID_Regulator_t
 }PID_Regulator_t;
 void PID_Reset(PID_Regulator_t *pid);
 void PID_Calc(PID_Regulator_t *pid);
+int16_t ProcessYawPID(float target, float position_feedback, float velocity_feedback);
+int16_t ProcessPitchPID(float target, float position_feedback, float velocity_feedback);
 int16_t PID_PROCESS_Double(fw_PID_Regulator_t pid_position,fw_PID_Regulator_t pid_speed,
                             float target, float position_feedback, float velocity_feedback);
 #endif

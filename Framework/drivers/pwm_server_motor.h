@@ -1,10 +1,22 @@
+/**
+  ******************************************************************************
+  * File Name          : pwm_server_motor.h
+  * Description        : 鑸垫満椹卞姩
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 鍒濆鍖栵紝璁惧畾瑙掑害
+  ******************************************************************************
+  */
 #ifndef _pwm_server_motor_
 #define _pwm_server_motor_
 #include "stm32f4xx_hal.h"
 #include "main.h" 
 #include "tim.h"
 
-//motorIndex: 对新主控，电源线朝右放置，上面一排的PWM驱动口,从左往右依次为0~7；下面一排PWM驱动口，从左往右依次为8~15
+//motorIndex: 
 void pwm_server_motor_init(uint8_t motorIndex);
 void pwm_server_motor_deinit(uint8_t motorIndex);
 //angle:0~180 in degrees

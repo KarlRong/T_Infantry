@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : pwm_server_motor.c
+  * Description        : 舵机驱动
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * PWM占空比对应舵机角度
+  ******************************************************************************
+  */
 #include "pwm_server_motor.h"
 
 void pwm_server_motor_init(uint8_t motorIndex)

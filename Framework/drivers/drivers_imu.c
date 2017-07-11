@@ -1,17 +1,25 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_imu.c
+  * Description        : IMU驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * MPU6050 IST8310
+  ******************************************************************************
+  */
+#include <cmsis_os.h>
+#include <spi.h>
+#include <tim.h>
 #include "drivers_imu_low.h"
-
 #include "utilities_debug.h"
 #include "utilities_tim.h"
-
-#include "cmsis_os.h"
-
 #include "drivers_imu_mpu6500_reg.h"
 #include "drivers_imu_IST8310_reg.h"
 #include "rtos_semaphore.h"
 
-#include "spi.h"
-
-#include "tim.h"
 
 #define MPU6500_NSS_Low() HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET)
 #define MPU6500_NSS_High() HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET)
@@ -129,7 +137,7 @@ static void MPU_Auto_Read_IST_config(uint8_t device_address, uint8_t reg_base_ad
 }
 
 //Initialize the IST8310
-uint8_t IST8310_Init(void)
+uint8_t InitIST8310(void)
 {
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,GPIO_PIN_SET);
   MPU6500_Write_Reg(MPU6500_USER_CTRL, 0x30);
@@ -190,7 +198,7 @@ uint8_t MPU6500_Set_Gyro_Fsr(uint8_t fsr)
 }
 
 //Initialize the MPU6500
-uint8_t MPU6500_Init(void)
+uint8_t InitMPU6500(void)
 {
   uint8_t index = 0;
   uint8_t MPU6500_Init_Data[10][2] = 
@@ -249,7 +257,7 @@ void IMU_Get_Data()
 }
 
 float gYroXs, gYroYs, gYroZs;
-void printIMUTask(void const * argument){
+void IMUTask(void const * argument){
 //	int16_t tmaxx, tmaxy, tmaxz;
 //	int16_t tminx, tminy, tminz;
 //	IMU_Get_Data();

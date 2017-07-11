@@ -1,3 +1,16 @@
+/**
+  ******************************************************************************
+  * File Name          : application_motorcontrol.c
+  * Description        : ÁîµÊú∫ÊéßÂà∂È©±Âä®ÂáΩÊï∞
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * ËÆæÂÆöÁîµÊú∫ÁîµÊµÅ
+	* ÈôÄËû∫‰ª™Â§ç‰Ωç
+  ******************************************************************************
+  */
 #include "application_motorcontrol.h"
 #include "drivers_uartrc_user.h"
 #include "can.h"
@@ -5,30 +18,26 @@
 #include "drivers_canmotor_user.h"
 #include "rtos_semaphore.h"
 #include "utilities_debug.h"
-#include "tasks_cmcontrol.h"
+#include "tasks_timed.h"
 #include "math.h"
 #include <math.h>
 #include <stdlib.h>
 #include "tasks_motor.h"
 #include "drivers_uartjudge_low.h"
+#include "drivers_cmpower.h"
 
 extern tGameInfo mytGameInfo;
-//typedef struct{
-//	CAN_HandleTypeDef  *canNum;
-//	uint32_t id;
-//}MotorCanNumId;
-int16_t CMFLIntensity = 0, CMFRIntensity = 0, CMBLIntensity = 0, CMBRIntensity = 0;
-
 extern uint8_t JUDGE_State;
 
 void setMotor(MotorId motorId, int16_t Intensity){
-//	static int16_t CMFLIntensity = 0, CMFRIntensity = 0, CMBLIntensity = 0, CMBRIntensity = 0;
+	static int16_t CMFLIntensity = 0, CMFRIntensity = 0, CMBLIntensity = 0, CMBRIntensity = 0;
 	static int8_t CMReady = 0;
 	
 	static int16_t GMYAWIntensity = 0, GMPITCHIntensity = 0;
 	static int8_t GMReady = 0;
 	
-	switch(motorId){
+	switch(motorId)
+	{
 		case CMFL:
 			if(CMReady & 0x1){CMReady = 0xF;}else{CMReady |= 0x1;}
 			CMFLIntensity = Intensity;break;
@@ -53,147 +62,25 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			fw_Error_Handler();
 	}
 	
-	//	µÁ¡˜π¶¬ œﬁ÷∆
-//	uint16_t CM_current_max = 24000;
-//	
-//	uint16_t CMFLIntensity_max =6000;
-//	uint16_t CMFRIntensity_max =6000;
-//	uint16_t CMBLIntensity_max =6000;
-//	uint16_t CMBRIntensity_max =6000;
-//	uint16_t sum = (CMFLIntensity + CMFRIntensity + CMBLIntensity + CMBRIntensity);
-//	
-//	if (CMFLIntensity > CMFLIntensity_max)
-//	{
-//		CMFLIntensity = (CMFLIntensity /sum) * CM_current_max;
-//	}
-//	else if(CMFRIntensity > CMFRIntensity_max)
-//	{
-//	  CMFRIntensity = (CMFRIntensity /sum) * CM_current_max;
-//	}
-//	else if(CMBLIntensity > CMBLIntensity_max)
-//	{
-//	  CMBLIntensity = (CMBLIntensity /sum) * CM_current_max;
-//	}
-//	else if(CMBRIntensity > CMBRIntensity_max)
-//	{
-//	  CMBRIntensity = (CMBRIntensity /sum) * CM_current_max;
-//	}
+	//Â∫ïÁõòÂäüÁéáÈôêÂà∂Ôºå80WÔºåËÉΩÈáèÊßΩÊª°60Ôºå‰Ωé‰∫é0ÊéâË°Ä
+    RestrictPower(&CMFLIntensity, &CMFRIntensity, &CMBLIntensity, &CMBRIntensity);
 	
-	
-	
-	
-//∂¡≥ˆπ¶¬ Ω¯––µÁ¡˜œﬁ÷∆
-//ƒ¨»œ≤ªœﬁ
-float CM_current_max = CM_current_MAX;
-float CMFLIntensity_max = CMFLIntensity_MAX;
-float CMFRIntensity_max = CMFRIntensity_MAX;
-float CMBLIntensity_max = CMBLIntensity_MAX;
-float CMBRIntensity_max = CMBRIntensity_MAX;
+	if(GetWorkState() == STOP_STATE)
+	{
+		CMFLIntensity = 0;
+		CMFRIntensity = 0;
+		CMBLIntensity = 0;
+		CMBRIntensity = 0;
+		GMYAWIntensity = 0;
+		GMPITCHIntensity = 0;
+	}
 
-//10-40≥ı≤Ωœﬁ÷∆
-if (mytGameInfo.remainPower > 10 & mytGameInfo.remainPower < 40){
-		
-	 CM_current_max = CM_current_lower;
-	 CMFLIntensity_max = CMFLIntensity_lower;
-	 CMFRIntensity_max = CMFRIntensity_lower;
-	 CMBLIntensity_max = CMBLIntensity_lower;
-	 CMBRIntensity_max = CMBRIntensity_lower;
-}
-//0-10º´œﬁœﬁ÷∆
-if (mytGameInfo.remainPower < 15 ){
-		
-	 CM_current_max = CM_current_bottom;
-	 CMFLIntensity_max = CMFLIntensity_bottom;
-	 CMFRIntensity_max = CMFRIntensity_bottom;
-	 CMBLIntensity_max = CMBLIntensity_bottom;
-	 CMBRIntensity_max = CMBRIntensity_bottom;
-}
-//æ¯∂‘≤ª≥¨
-if (mytGameInfo.remainPower < 7 ){
-		
-	 CM_current_max = 0;
-	 CMFLIntensity_max = 0;
-	 CMFRIntensity_max = 0;
-	 CMBLIntensity_max = 0;
-	 CMBRIntensity_max = 0;
-}
-
-if (JUDGE_State == 1){
-		
-	 CM_current_max = 13000;
-	 CMFLIntensity_max = 4500;
-	 CMFRIntensity_max = 4500;
-	 CMBLIntensity_max = 4500;
-	 CMBRIntensity_max = 4500;
-}
-
-	float sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
-	
-	if ((CMFLIntensity > CMFLIntensity_max))
+	if(CMReady == 0xF)
 	{
-		CMFLIntensity = CMFLIntensity_max;
-	}
-	else if ((CMFLIntensity < -CMFLIntensity_max))
-	{
-		CMFLIntensity = -CMFLIntensity_max;
-	}
-	if(CMFRIntensity > CMFRIntensity_max)
-	{
-	  CMFRIntensity = CMFRIntensity_max;
-	}
-	else if(CMFRIntensity < -CMFRIntensity_max)
-	{
-	  CMFRIntensity = -CMFRIntensity_max;
-	}
-	if(CMBLIntensity > CMBLIntensity_max)
-	{
-	  CMBLIntensity = CMBLIntensity_max;
-	}
-	else if(CMBLIntensity < -CMBLIntensity_max)
-	{
-	  CMBLIntensity = -CMBLIntensity_max;
-	}
-	if(CMBRIntensity > CMBRIntensity_max)
-	{
-	  CMBRIntensity = CMBRIntensity_max;
-	}
-	else	if(CMBRIntensity < -CMBRIntensity_max)
-	{
-	  CMBRIntensity = -CMBRIntensity_max;
-	}
-	if( sum > CM_current_max){
-		CMFLIntensity = (CM_current_max/sum)*CMFLIntensity;
-		CMFRIntensity = (CM_current_max/sum)*CMFRIntensity;
-		CMBLIntensity = (CM_current_max/sum)*CMBLIntensity;
-		CMBRIntensity = (CM_current_max/sum)*CMBRIntensity;
-	}
-//	//µ◊≈Ãµ˜ ‘
-//	    CMFLIntensity = 7500;
-//			CMFRIntensity = 7500;
-//			CMBLIntensity = 7500;
-//			CMBRIntensity = 7500;
-	
-	
-	
-	if((GetWorkState() == STOP_STATE)  || GetWorkState() == CALI_STATE || GetWorkState() == PREPARE_STATE || GetEmergencyFlag() == EMERGENCY){
-			CMFLIntensity = 0;
-			CMFRIntensity = 0;
-			CMBLIntensity = 0;
-			CMBRIntensity = 0;
-			GMYAWIntensity = 0;
-			GMPITCHIntensity = 0;
-		}
-CMFLIntensity = 0;
-			CMFRIntensity = 0;
-			CMBLIntensity = 0;
-			CMBRIntensity = 0;
-	if(CMReady == 0xF){
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(CMTxIOPool);
+		
 		pData->StdId = CM_TXID;
-		
-		
-		
-		pData->Data[0] = (uint8_t)(CMFLIntensity >> 8);
+  	pData->Data[0] = (uint8_t)(CMFLIntensity >> 8);
 		pData->Data[1] = (uint8_t)CMFLIntensity;
 		pData->Data[2] = (uint8_t)(CMFRIntensity >> 8);
 		pData->Data[3] = (uint8_t)CMFRIntensity;
@@ -201,30 +88,15 @@ CMFLIntensity = 0;
 		pData->Data[5] = (uint8_t)CMBLIntensity;
 		pData->Data[6] = (uint8_t)(CMBRIntensity >> 8);
 		pData->Data[7] = (uint8_t)CMBRIntensity;
-    
-		
-//		fw_printfln("CMFLIntensity:%d",CMFLIntensity);		
-		
+ 	
 		IOPool_getNextWrite(CMTxIOPool);
+		
+		TransmitCMGMCan();
 		CMReady = 0;
-//		CMFLIntensity = CMFRIntensity = CMBLIntensity = CMBRIntensity = 0;
-		if(osSemaphoreRelease(CMGMCanHaveTransmitSemaphoreHandle) == osErrorOS){
-//			fw_Warning();
-		}
-		if(IOPool_hasNextRead(CMTxIOPool, 0)){
-			osSemaphoreWait(CMGMCanTransmitSemaphoreHandle, osWaitForever);
-			IOPool_getNextRead(CMTxIOPool, 0);
-			CMGMMOTOR_CAN.pTxMsg = IOPool_pGetReadData(CMTxIOPool, 0);
-			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&CMGMMOTOR_CAN) != HAL_OK){
-				fw_Warning();
-				osSemaphoreRelease(CMGMCanTransmitSemaphoreHandle);
-			}
-			taskEXIT_CRITICAL();
-		}
- }
+    }
 	
-	if(GMReady == 0x3){
+	if(GMReady == 0x3)
+	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(GMTxIOPool);
 		pData->StdId = GM_TXID;
 		pData->Data[0] = (uint8_t)(GMYAWIntensity >> 8);
@@ -237,53 +109,25 @@ CMFLIntensity = 0;
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(GMTxIOPool);
 		GMReady = 0;
-//		GMYAWIntensity = GMPITCHIntensity = 0;
-//		if(osSemaphoreRelease(CMGMCanHaveTransmitSemaphoreHandle) == osErrorOS){
-//	//		fw_Warning();
-//		}
-		xSemaphoreGive(motorCanTransmitSemaphore);
-		if(IOPool_hasNextRead(GMTxIOPool, 0)){
-			osSemaphoreWait(CMGMCanTransmitSemaphoreHandle, osWaitForever);
-			IOPool_getNextRead(GMTxIOPool, 0);
-			CMGMMOTOR_CAN.pTxMsg = IOPool_pGetReadData(GMTxIOPool, 0);
-			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&CMGMMOTOR_CAN) != HAL_OK){
-				fw_Warning();
-				osSemaphoreRelease(CMGMCanTransmitSemaphoreHandle);
-			}
-			taskEXIT_CRITICAL();
-		}
+
+    TransmitCMGMCan();
 	}
 }
 	
 
-uint8_t GYRO_RESETED = 0;
 void GYRO_RST(void)
 {
-		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
-		pData->StdId = ZGYRO_TXID;
-		pData->Data[0] = 0x00;
-		pData->Data[1] = 0x01;
-		pData->Data[2] = 0x02;
-		pData->Data[3] = 0x03;
-		pData->Data[4] = 0x04;
-		pData->Data[5] = 0x05;
-		pData->Data[6] = 0x06;
-		pData->Data[7] = 0x07;
-		IOPool_getNextWrite(ZGYROTxIOPool);
-//		if(osSemaphoreRelease(ZGYROCanHaveTransmitSemaphoreHandle) == osErrorOS){
-//			fw_Warning();
-//		}
-	if(IOPool_hasNextRead(ZGYROTxIOPool, 0)){
-			osSemaphoreWait(ZGYROCanTransmitSemaphoreHandle, osWaitForever);
-			IOPool_getNextRead(ZGYROTxIOPool, 0);
-			ZGYRO_CAN.pTxMsg = IOPool_pGetReadData(ZGYROTxIOPool, 0);
-			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&ZGYRO_CAN) != HAL_OK){
-				fw_Warning();
-				osSemaphoreRelease(ZGYROCanTransmitSemaphoreHandle);
-			}
-			taskEXIT_CRITICAL();
-		}
-	GYRO_RESETED = 1;
+	CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
+	pData->StdId = ZGYRO_TXID;
+	pData->Data[0] = 0x00;
+	pData->Data[1] = 0x01;
+	pData->Data[2] = 0x02;
+	pData->Data[3] = 0x03;
+	pData->Data[4] = 0x04;
+	pData->Data[5] = 0x05;
+	pData->Data[6] = 0x06;
+	pData->Data[7] = 0x07;
+	IOPool_getNextWrite(ZGYROTxIOPool);
+
+	TransmitGYROCAN();
 }

@@ -1,7 +1,19 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_flash.h
+  * Description        : Flash驱动
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * FLASH用于在掉电后存储数据，如PID参数等
+  ******************************************************************************
+  */
 #ifndef DRIVERS_FLASH_H
 #define DRIVERS_FLASH_H
 
-#include "stdint.h"
+#include <stdint.h>
 
 //FLASH起始地址
 #define STM32_FLASH_BASE 0x08000000 	//STM32 FLASH的起始地址

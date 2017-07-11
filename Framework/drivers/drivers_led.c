@@ -1,9 +1,23 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_led.c
+  * Description        : LED闪烁任务
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * LED任务运行在最低优先级，可以用来判断程序是否宕机
+	* 也可用来显示运行情况(todo)
+  ******************************************************************************
+  */
+	
+#include <cmsis_os.h>
+#include <gpio.h>
 #include "drivers_led_user.h"
 #include "drivers_led_low.h"
-
 #include "peripheral_gpio.h"
-#include "cmsis_os.h"
-#include "gpio.h"
+
 
 #define ledGreenOn() HAL_GPIO_WritePin(GREEN_PIN, GREEN_GPIO_PORT, GPIO_PIN_RESET)
 #define ledGreenOff() HAL_GPIO_WritePin(GREEN_PIN, GREEN_GPIO_PORT, GPIO_PIN_SET)

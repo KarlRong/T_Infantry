@@ -1,9 +1,21 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_canmotor_user.h
+  * Description        : 电机CAN总线驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * CAN总线用户函数
+  ******************************************************************************
+  */
 #ifndef DRIVERS_CANMOTOR_USER_H
 #define DRIVERS_CANMOTOR_USER_H
 
+#include <can.h>
 #include "utilities_iopool.h"
 #include "drivers_canmotor_low.h"
-#include "can.h"
 
 //RxID
 #define CMFL_RXID 0x202u
@@ -49,9 +61,10 @@ IOPoolDeclare(GMTxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(ZGYROTxIOPool, CanTxMsgTypeDef);
 
 
-void motorInit(void);
+void InitCanReception(void);
 void Set_CM_Speed(int16_t cm1_iq, int16_t cm2_iq, int16_t cm3_iq, int16_t cm4_iq);
-
+void TransmitCMGMCan(void);
+void TransmitGYROCAN(void);
 void CANReceiveMsgProcess_820R(Motor820RRxMsg_t * msg,volatile Encoder * CMxEncoder);
 void EncoderProcess(volatile Encoder *v, Motor820RRxMsg_t * msg);
 void GetEncoderBias(volatile Encoder *v, Motor820RRxMsg_t * msg);

@@ -1,11 +1,23 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_canmotor_low.h
+  * Description        : 电机CAN总线驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * CAN总线底层函数
+  ******************************************************************************
+  */
 #ifndef DRIVERS_CANMOTOR_LOW_H
 #define DRIVERS_CANMOTOR_LOW_H
 
-#include "can.h"
-#include "stdint.h"
-#include "cmsis_os.h"
+#include <can.h>
+#include <stdint.h>
+#include <cmsis_os.h>
 
-void motorInit(void);
+void InitCanReception(void);
 
 void CMGMCanTransmitTask(void const * argument);
 void ZGYROCanTransmitTask(void const * argument);

@@ -1,3 +1,16 @@
+/**
+  ******************************************************************************
+  * File Name          : peripheral_define.h
+  * Description        : 外设句柄define
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 提高程序可读性
+	* 定时器、串口、CAN
+  ******************************************************************************
+  */
 #ifndef PERIPHERAL_DEFINE_H
 #define PERIPHERAL_DEFINE_H
 
@@ -8,8 +21,8 @@
 #define USER_TIM htim6
 
 #define RC_UART huart1
-#define DEBUG_UART huart2//huart2
-#define CTRL_UART huart3
+#define DEBUG_UART huart3//huart2为蓝牙串口位
+#define MANIFOLD_UART huart3
 #define JUDGE_UART huart6
 
 #define CMGMMOTOR_CAN hcan1

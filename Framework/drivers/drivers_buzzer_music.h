@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_buzzer_music.h
+  * Description        : 蜂鸣器驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 蜂鸣器音乐表格
+  ******************************************************************************
+  */
 #ifndef DRIVERS_BUZZER_MUSIC_H
 #define DRIVERS_BUZZER_MUSIC_H
 

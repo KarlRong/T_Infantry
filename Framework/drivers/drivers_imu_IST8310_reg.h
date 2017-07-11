@@ -1,4 +1,18 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_imu_IST8310_reg.h
+  * Description        : IMU驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * IST8310寄存器地址定义
+  ******************************************************************************
+  */
 //IST8310 REG address
+#ifndef __IST8310_REG
+#define __IST8310_REG
 
 #define IST8310_ADDRESS           0x0E
 #define IST8310_DEVICE_ID_A       0x10
@@ -21,3 +35,4 @@
 
 #define IST8310_ODR_MODE          0x01
 
+#endif

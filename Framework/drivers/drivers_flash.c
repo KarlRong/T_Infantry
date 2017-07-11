@@ -1,7 +1,19 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_flash.c
+  * Description        : Flash驱动
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * FLASH用于在掉电后存储数据，如PID参数等
+  ******************************************************************************
+  */
+#include <stm32f4xx_hal.h>
+#include <stm32f4xx_hal_flash.h>
 #include "drivers_flash.h"
 
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_flash.h"
 
 uint32_t STMFLASH_ReadWord(uint32_t faddr)
 {
