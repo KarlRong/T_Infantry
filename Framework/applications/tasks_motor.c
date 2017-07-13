@@ -35,8 +35,6 @@
 #include "peripheral_define.h"
 #include "drivers_uartupper_user.h"
 
-#include "utilities_debug.h"
-
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台PID
@@ -54,16 +52,16 @@ fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(4.0, 0, 2.5, 10000.0, 10000.0,
 fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(5.3, -1.0, 0.5, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(25.0, 0.0, 5.0, 10000.0, 10000.0, 10000.0, 3500.0);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(40.0, 0.0, 20, 10000.0, 10000.0, 10000.0, 4000.0);
-#define yaw_zero 720
-#define pitch_zero 5003
+#define yaw_zero 1445//720
+#define pitch_zero 5009 //5003
 #endif
 #ifdef INFANTRY_1
 fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(15.0, 0.0, 0.5, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(5.3, -1.0, 1.5, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(35.0, 0.0, 2.0, 10000.0, 10000.0, 10000.0, 3500.0);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(40.0, 0.0, 20, 10000.0, 10000.0, 10000.0, 4000.0);
-#define yaw_zero 1027//1040
-#define pitch_zero 6200//6400
+#define yaw_zero 175//1040
+#define pitch_zero 6000
 #endif
 //底盘速度PID
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -98,7 +96,8 @@ float mm =0;
 float nn =0;
 int16_t twist_target = 0;
 
-extern float zyYawTarget,zyPitchTarget;//张雁调试大符
+extern float zyYawTarget,zyPitchTarget;
+float yawRealAngle = 0.0;//张雁调试大符
 
 void CMGMControlTask(void const * argument){
 	while(1)
@@ -138,7 +137,7 @@ void ControlYaw(void)
 	if(IOPool_hasNextRead(GMYAWRxIOPool, 0))
 	{
 		uint16_t yawZeroAngle = yaw_zero;
-		float yawRealAngle = 0.0;
+		//float yawRealAngle = 0.0;张雁改全局
 		int16_t yawIntensity = 0;		
 		
 		/*从IOPool读编码器*/
@@ -180,6 +179,7 @@ void ControlYaw(void)
 		{
 			//fw_printfln("Rune State:%f",yawAngleTarget);
 			//yawAngleTarget=zyYawTartet;
+			//yawRealAngle = -ZGyroModuleAngle;
 		}
 						
 		yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);

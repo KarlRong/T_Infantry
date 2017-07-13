@@ -54,4 +54,6 @@ IOPoolDeclare(ctrlUartIOPool, struct{uint8_t ch[size_frame];});
 
 void manifoldUartRxCpltCallback(void);
 
+void zyLocationInit(float yaw_center, float pitch_center);//张雁大符初始
+
 #endif

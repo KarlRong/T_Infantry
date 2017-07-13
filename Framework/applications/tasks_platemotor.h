@@ -16,5 +16,9 @@
 #define FRAMEWORK_TASKS_PLATECONTROL_H
 
 #include "cmsis_os.h"
+#include "tasks_timed.h"
+#include "pid_regulator.h"
+
+void ShootOneBullet(void);
 
 #endif

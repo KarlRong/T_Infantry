@@ -33,7 +33,7 @@ void InitRemoteControl(void);
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.008f
 
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
-#define FRICTION_WHEEL_MAX_DUTY             1350
+#define FRICTION_WHEEL_MAX_DUTY             1250
 //mouse control parameters
 //#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
 //#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
@@ -187,4 +187,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val);
 void MouseShootControl(Mouse *mouse);
 void SetInputMode(Remote *rc);
 void SetFrictionWheelSpeed(uint16_t x);
+
+void zySetLeftMode(Remote *rc);
+unsigned int zyGetLeftPostion();
 #endif

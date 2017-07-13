@@ -33,6 +33,10 @@
 #include "peripheral_define.h"
 #include "drivers_platemotor.h"
 
-
+extern PID_Regulator_t ShootMotorPositionPID;
+void ShootOneBullet()
+{
+	ShootMotorPositionPID.ref = ShootMotorPositionPID.ref+OneShoot;
+}
 
 

@@ -54,6 +54,8 @@ extern float yawAngleTarget, pitchAngleTarget;
 extern uint8_t g_isGYRO_Rested ;
 extern int twist_state ;
 
+extern WorkState_e g_workState;//张雁大符
+
 void RControlTask(void const * argument){
 	uint8_t data[18];
 	static int countwhile = 0;
@@ -109,7 +111,7 @@ void RControlTask(void const * argument){
 		}
 		else{
 			/*错误帧等待2ms后清空缓存，开启中断*/
-			fw_printfln("RC discarded");
+			//fw_printfln("RC discarded");
 			first_frame = 1;
 			vTaskDelay(2 / portTICK_RATE_MS);
 			HAL_UART_AbortReceive(&RC_UART);
@@ -144,6 +146,8 @@ void RemoteDataProcess(uint8_t *pData)
 	RC_CtrlData.key.v = ((int16_t)pData[14]) | ((int16_t)pData[15] << 8);//16 bits correspond to 16 keys
 	
 	SetInputMode(&RC_CtrlData.rc);
+	
+	zySetLeftMode(&RC_CtrlData.rc);//张雁大符
 
 	switch(GetInputMode())
 	{
@@ -158,10 +162,21 @@ void RemoteDataProcess(uint8_t *pData)
 		{
 			if(GetWorkState() == NORMAL_STATE)
 			{
-				MouseKeyControlProcess(&RC_CtrlData.mouse,&RC_CtrlData.key);//键鼠模式
-				SetShootMode(AUTO);//调试自瞄用
+//				if(RC_CtrlData.rc.s1==3)
+//				{
+//					g_workState=RUNE_STATE;
+//				}
+//				else
+//				{
+					MouseKeyControlProcess(&RC_CtrlData.mouse,&RC_CtrlData.key);//键鼠模式
+					SetShootMode(AUTO);//调试自瞄用
 	//			RemoteShootControl(&switch1, RC_CtrlData.rc.s1);
+				//}
 			}
+//			else if(GetWorkState()==RUNE_STATE&&RC_CtrlData.rc.s1!=3)
+//			{
+//				g_workState=NORMAL_STATE;
+//			}
 		}break;
 		case STOP:
 		{

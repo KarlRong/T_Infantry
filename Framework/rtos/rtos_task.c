@@ -85,7 +85,7 @@ void rtos_AddThreads()
   printIMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
 
 //遥控器控制任务	
-	osThreadDef(RControlTask, RControlTask, osPriorityAboveNormal , 0, 512);
+	osThreadDef(RControlTask, RControlTask, osPriorityAboveNormal , 0, 512);//zy0512
   RControlTaskHandle = osThreadCreate(osThread(RControlTask), NULL);
 
 //妙算通信任务：大神符，自动瞄准
@@ -101,7 +101,7 @@ void rtos_AddThreads()
 //  PlateTaskHandle = osThreadCreate(osThread(Plate_Task), NULL);
 //2ms定时任务，状态机切换，调试信息输出等
 
-	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);
+	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
   TimerTaskHandle = osThreadCreate(osThread(Timer_Task), NULL);
 
 }

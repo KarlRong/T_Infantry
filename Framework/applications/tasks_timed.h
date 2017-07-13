@@ -37,7 +37,7 @@ typedef enum
 
 WorkState_e GetWorkState(void);
 
-#define OneShoot (725)
+#define OneShoot (1011) //722 7扇拨盘  1011 5扇拨盘
 #define PID_SHOOT_MOTOR_SPEED      (30)
 #define CHASSIS_SPEED_ATTENUATION   (1.30f)
 #define PREPARE_TIME_TICK_MS 5000      //prapare time in ms*2
@@ -135,9 +135,9 @@ WorkState_e GetWorkState(void);
 	0,\
 	0,\
 	{0,0},\
-	30.f,\
-	0.5f,\
-	0.0f,\
+	7.5f,\
+	0.05f,\
+	0.6f,\
 	0,\
 	0,\
 	0,\

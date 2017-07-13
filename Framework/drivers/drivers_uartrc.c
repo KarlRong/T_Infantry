@@ -66,7 +66,9 @@ Gimbal_Ref_t GimbalRef;
 FrictionWheelState_e friction_wheel_state = FRICTION_WHEEL_OFF; 
 
 volatile Shoot_State_e shootState = NOSHOOTING; 
-InputMode_e inputmode = REMOTE_INPUT;   
+InputMode_e inputmode = REMOTE_INPUT;  
+
+unsigned int zyLeftPostion; //大符用左拨杆位置
 
 RampGen_t frictionRamp = RAMP_GEN_DAFAULT;  
 RampGen_t LRSpeedRamp = RAMP_GEN_DAFAULT;   
@@ -153,6 +155,27 @@ void SetInputMode(Remote *rc)
 	}	
 }
 
+//张雁大符
+void zySetLeftMode(Remote *rc)
+{
+	if(rc->s1 == 1)
+	{
+		zyLeftPostion = 1;
+	}
+	else if(rc->s1 == 3)
+	{
+		zyLeftPostion = 3;
+	}
+	else if(rc->s1 == 2)
+	{
+		zyLeftPostion = 2;
+	}	
+}
+unsigned int zyGetLeftPostion()
+{
+	return zyLeftPostion;
+}
+
 InputMode_e GetInputMode()
 {
 	return inputmode;
@@ -194,6 +217,8 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			{
 				/*斜坡函数必须有，避免电流过大烧坏主控板*/
 				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				//SetFrictionWheelSpeed(1000);
+				//friction_wheel_state = FRICTION_WHEEL_ON; 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					friction_wheel_state = FRICTION_WHEEL_ON; 	
