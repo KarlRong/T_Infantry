@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : utilities_minmax.h
+  * Description        : MINMAX函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 对数据进行范围限制
+  ******************************************************************************
+  */
 #ifndef UTILITIES_MINMAX_H
 #define UTILITIES_MINMAX_H
 

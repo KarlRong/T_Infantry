@@ -335,7 +335,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;                                      ../Drivers/STM32F4xx_HAL_Driver/Inc;                                      ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                                      ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;                                      ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;                                      ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;                                      ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                                      ../Middlewares/Third_Party/FreeRTOS/Source/include;                                      ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                      ../Drivers/CMSIS/Include;                                      ..\Framework;                                      ..\Framework\utilities;                                      ..\Framework\rtos;                                      ..\Framework\drivers;                                      ..\Framework\applications;                                      ..\Framework\peripheral</IncludePath>
+              <IncludePath>../Inc;                                        ../Drivers/STM32F4xx_HAL_Driver/Inc;                                        ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                                        ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;                                        ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;                                        ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;                                        ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                                        ../Middlewares/Third_Party/FreeRTOS/Source/include;                                        ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                        ../Drivers/CMSIS/Include;                                        ..\Framework;                                        ..\Framework\utilities;                                        ..\Framework\rtos;                                        ..\Framework\drivers;                                        ..\Framework\applications;                                        ..\Framework\peripheral</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -735,11 +735,6 @@
               <FilePath>..\Framework\peripheral\peripheral_usart.h</FilePath>
             </File>
             <File>
-              <FileName>peripheral_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
-            </File>
-            <File>
               <FileName>peripheral_tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\peripheral\peripheral_tim.h</FilePath>
@@ -783,6 +778,11 @@
               <FileName>utilities_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\utilities\utilities_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
             </File>
             <File>
               <FileName>utilities_tim.h</FileName>
@@ -979,6 +979,26 @@
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_uartjudge_low.h</FilePath>
             </File>
+            <File>
+              <FileName>drivers_platemotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\drivers_platemotor.c</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_platemotor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_platemotor.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_cmpower.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\drivers_cmpower.c</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_cmpower.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_cmpower.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1035,14 +1055,34 @@
               <FilePath>..\Framework\applications\tasks_remotecontrol.h</FilePath>
             </File>
             <File>
-              <FileName>tasks_cmcontrol.c</FileName>
+              <FileName>tasks_timed.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Framework\applications\tasks_cmcontrol.c</FilePath>
+              <FilePath>..\Framework\applications\tasks_timed.c</FilePath>
             </File>
             <File>
-              <FileName>tasks_cmcontrol.h</FileName>
+              <FileName>tasks_timed.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Framework\applications\tasks_cmcontrol.h</FilePath>
+              <FilePath>..\Framework\applications\tasks_timed.h</FilePath>
+            </File>
+            <File>
+              <FileName>application_waveform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\application_waveform.c</FilePath>
+            </File>
+            <File>
+              <FileName>application_waveform.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\application_waveform.h</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_platemotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_platemotor.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_platemotor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_platemotor.h</FilePath>
             </File>
           </Files>
         </Group>

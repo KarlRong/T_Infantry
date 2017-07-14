@@ -53,8 +53,10 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
-#define PM_Encoder_Pin GPIO_PIN_2
-#define PM_Encoder_GPIO_Port GPIOC
+#define EncoderB_Pin GPIO_PIN_11
+#define EncoderB_GPIO_Port GPIOH
+#define EncoderA_Pin GPIO_PIN_10
+#define EncoderA_GPIO_Port GPIOH
 #define PM_Dir_Ctrl1_Pin GPIO_PIN_4
 #define PM_Dir_Ctrl1_GPIO_Port GPIOA
 #define PM_Ctrl_Pin GPIO_PIN_12

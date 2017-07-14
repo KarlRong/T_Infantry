@@ -1,3 +1,17 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_uartrc.c
+  * Description        : 遥控器串口
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 串口初始化
+	* 串口数据读取
+	* 数据处理函数
+  ******************************************************************************
+  */
 #include "drivers_uartrc_user.h"
 #include "drivers_uartrc_low.h"
 #include "drivers_led_user.h"
@@ -21,34 +35,24 @@
 #include "stm32f4xx_hal_uart.h"
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
-void rcInit(){
+void InitRemoteControl(){
 	//遥控器DMA接收开启(一次接收18个字节)
 	if(HAL_UART_Receive_DMA(&RC_UART, IOPool_pGetWriteData(rcUartIOPool)->ch, 18) != HAL_OK){
 			Error_Handler();
 	} 
-//	__HAL_UART_ENABLE_IT(&RC_UART, UART_FLAG_IDLE);
+//	__HAL_UART_ENABLE_IT(&RC_UART, UART_FLAG_IDLE);//空闲中断方式更优，未调通
 	RemoteTaskInit();
 }
 
 void rcUartRxCpltCallback(){
 	static portBASE_TYPE xHigherPriorityTaskWoken;
 	 xHigherPriorityTaskWoken = pdFALSE; 
-//	static HAL_UART_StateTypeDef uart_state;
-//	fw_printfln("flag: %x",__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_RXNE));
-//	while(__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE) == 0){
-//		fw_Warning();
-//	}
-//	__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE);
-//	fw_printfln("flag1: %d",__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE));
-//	__HAL_UART_CLEAR_PEFLAG(&RC_UART);
-//	fw_printfln("flag12: %d",__HAL_UART_GET_IT_SOURCE(&RC_UART, UART_FLAG_IDLE));
-//	fw_printfln("flag: %x",__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_IDLE));
-//	 while(__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_IDLE) == 0)
-//   {}
-//	__HAL_UART_CLEAR_FLAG(&RC_UART, UART_FLAG_IDLE);
-//	fw_printfln("flag2: %x",__HAL_UART_GET_FLAG(&RC_UART,UART_FLAG_IDLE));
-//	fw_printfln("(thiscount_rc - lastcount_rc):  %d", (thiscount_rc - lastcount_rc));
+	//释放信号量
    xSemaphoreGiveFromISR(xSemaphore_rcuart, &xHigherPriorityTaskWoken);
+	//切换上下文，RTOS提供
+	//当在中断外有多个不同优先级任务等待信号量时
+	//在退出中断前进行一次切换上下文
+	//这里无用
 	if( xHigherPriorityTaskWoken == pdTRUE ){
    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	 }
@@ -57,33 +61,33 @@ void rcUartRxCpltCallback(){
 
 
 RC_Ctl_t RC_CtrlData;   //remote control data
-ChassisSpeed_Ref_t ChassisSpeedRef; //µ×ÅÌµç»úÄ¿±êËÙ¶È
-Gimbal_Ref_t GimbalRef; //ÔÆÌ¨Ä¿±ê
-FrictionWheelState_e friction_wheel_state = FRICTION_WHEEL_OFF; //Ä¦²ÁÂÖ×´Ì¬
+ChassisSpeed_Ref_t ChassisSpeedRef; 
+Gimbal_Ref_t GimbalRef; 
+FrictionWheelState_e friction_wheel_state = FRICTION_WHEEL_OFF; 
 
-volatile Shoot_State_e shootState = NOSHOOTING; //²¦ÅÌµç»ú×´Ì¬
-InputMode_e inputmode = REMOTE_INPUT;   //ÊäÈëÄ£Ê½Éè¶¨
+volatile Shoot_State_e shootState = NOSHOOTING; 
+InputMode_e inputmode = REMOTE_INPUT;  
 
-RampGen_t frictionRamp = RAMP_GEN_DAFAULT;  //Ä¦²ÁÂÖÐ±ÆÂ
-RampGen_t LRSpeedRamp = RAMP_GEN_DAFAULT;   //mouse×óÓÒÒÆ¶¯Ð±ÆÂ
-RampGen_t FBSpeedRamp = RAMP_GEN_DAFAULT;   //mouseÇ°ºóÒÆ¶¯Ð±ÆÂ
+uint8_t zyLeftPostion; //大符用左拨杆位置
+
+RampGen_t frictionRamp = RAMP_GEN_DAFAULT;  
+RampGen_t LRSpeedRamp = RAMP_GEN_DAFAULT;   
+RampGen_t FBSpeedRamp = RAMP_GEN_DAFAULT;   
 
 void RemoteTaskInit()
 {
-
+  /*斜坡初始化，copy from官方程序，实现被封装在RMLib*/
 	frictionRamp.SetScale(&frictionRamp, FRICTION_RAMP_TICK_COUNT);
 	LRSpeedRamp.SetScale(&LRSpeedRamp, MOUSE_LR_RAMP_TICK_COUNT);
 	FBSpeedRamp.SetScale(&FBSpeedRamp, MOUSR_FB_RAMP_TICK_COUNT);
 	frictionRamp.ResetCounter(&frictionRamp);
 	LRSpeedRamp.ResetCounter(&LRSpeedRamp);
 	FBSpeedRamp.ResetCounter(&FBSpeedRamp);
-
-	GimbalRef.pitch_angle_dynamic_ref = 0.0f;
-	GimbalRef.yaw_angle_dynamic_ref = 0.0f;
+  /*底盘速度初始化*/
 	ChassisSpeedRef.forward_back_ref = 0.0f;
 	ChassisSpeedRef.left_right_ref = 0.0f;
 	ChassisSpeedRef.rotate_ref = 0.0f;
-
+  /*摩擦轮*/
 	SetFrictionState(FRICTION_WHEEL_OFF);
 }
 /*拨杆数据处理*/
@@ -151,6 +155,27 @@ void SetInputMode(Remote *rc)
 	}	
 }
 
+//张雁大符
+void zySetLeftMode(Remote *rc)
+{
+	if(rc->s1 == 1)
+	{
+		zyLeftPostion = 1;
+	}
+	else if(rc->s1 == 3)
+	{
+		zyLeftPostion = 3;
+	}
+	else if(rc->s1 == 2)
+	{
+		zyLeftPostion = 2;
+	}	
+}
+uint8_t zyGetLeftPostion()
+{
+	return zyLeftPostion;
+}
+
 InputMode_e GetInputMode()
 {
 	return inputmode;
@@ -159,17 +184,18 @@ InputMode_e GetInputMode()
 /*
 input: RemoteSwitch_t *sw, include the switch info
 */
-#ifdef Infantry_4
+#ifdef INFANTRY_1
 #define FRICTION_WHEEL_MAX_DUTY             1500
 #endif
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
+	/*左上角拨杆状态获取*/
 	GetRemoteSwitchAction(sw, val);
 	switch(friction_wheel_state)
 	{
 		case FRICTION_WHEEL_OFF:
 		{
-			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //´Ó¹Ø±Õµ½start turning
+			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 			{
 				SetShootState(NOSHOOTING);
 				frictionRamp.ResetCounter(&frictionRamp);
@@ -179,7 +205,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
 		{
-			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   //¸ÕÆô¶¯¾Í±»¹Ø±Õ
+			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
 				LASER_OFF();
 				SetShootState(NOSHOOTING);
@@ -189,7 +215,10 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			}
 			else
 			{
+				/*斜坡函数必须有，避免电流过大烧坏主控板*/
 				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				//SetFrictionWheelSpeed(1000);
+				//friction_wheel_state = FRICTION_WHEEL_ON; 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					friction_wheel_state = FRICTION_WHEEL_ON; 	
@@ -199,7 +228,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 		}break;
 		case FRICTION_WHEEL_ON:
 		{
-			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   //¹Ø±ÕÄ¦²ÁÂÖ
+			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
 				LASER_OFF();
 				friction_wheel_state = FRICTION_WHEEL_OFF;				  
@@ -221,12 +250,12 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 	 
 void MouseShootControl(Mouse *mouse)
 {
-	static int16_t closeDelayCount = 0;   //ÓÒ¼ü¹Ø±ÕÄ¦²ÁÂÖ3sÑÓÊ±¼ÆÊý
+	static int16_t closeDelayCount = 0;   
 	switch(friction_wheel_state)
 	{
 		case FRICTION_WHEEL_OFF:
 		{
-			if(mouse->last_press_r == 0 && mouse->press_r == 1)   //´Ó¹Ø±Õµ½start turning
+			if(mouse->last_press_r == 0 && mouse->press_r == 1)   
 			{
 				SetShootState(NOSHOOTING);
 				frictionRamp.ResetCounter(&frictionRamp);
@@ -245,7 +274,7 @@ void MouseShootControl(Mouse *mouse)
 			{
 				closeDelayCount = 0;
 			}
-			if(closeDelayCount>50)   //¹Ø±ÕÄ¦²ÁÂÖ
+			if(closeDelayCount>50)   
 			{
 				LASER_OFF();
 				friction_wheel_state = FRICTION_WHEEL_OFF;				  
@@ -255,7 +284,7 @@ void MouseShootControl(Mouse *mouse)
 			}
 			else
 			{
-				//Ä¦²ÁÂÖ¼ÓËÙ				
+		    /*摩擦轮转速修改 FRICTION_WHEEL_MAX_DUTY*/
 				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
@@ -274,8 +303,7 @@ void MouseShootControl(Mouse *mouse)
 			{
 				closeDelayCount = 0;
 			}
-			
-			if(closeDelayCount>50)   //¹Ø±ÕÄ¦²ÁÂÖ
+			if(closeDelayCount>50)   //
 			{
 				LASER_OFF();
 				friction_wheel_state = FRICTION_WHEEL_OFF;				  
@@ -283,7 +311,7 @@ void MouseShootControl(Mouse *mouse)
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NOSHOOTING);
 			}			
-			else if(mouse->press_l== 1)  //°´ÏÂ×ó¼ü£¬Éä»÷
+			else if(mouse->last_press_l == 0 && mouse->press_l== 1)  //检测鼠标左键单击动作
 			{
 				SetShootState(SHOOTING);				
 			}
@@ -294,11 +322,8 @@ void MouseShootControl(Mouse *mouse)
 		} break;				
 	}	
 	mouse->last_press_r = mouse->press_r;
+	mouse->last_press_l = mouse->press_l;
 }
-
-
-
-
 
 
 Shoot_State_e GetShootState()

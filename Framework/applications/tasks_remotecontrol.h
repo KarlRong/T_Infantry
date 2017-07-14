@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * File Name          : tasks_remotecontrol.h
+  * Description        : 遥控器处理任务
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  ******************************************************************************
+  */
 #ifndef FRAMEWORK_TASKS_REMOTECONTROL_H
 #define FRAMEWORK_TASKS_REMOTECONTROL_H
 

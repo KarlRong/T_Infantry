@@ -1,10 +1,22 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_uartrc_low.h
+  * Description        : 遥控器串口
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 遥控器底层函数
+  ******************************************************************************
+  */
 #ifndef DRIVERS_UARTRC_LOW_H
 #define DRIVERS_UARTRC_LOW_H
 
 #include "stdint.h"
 void rcUartRxCpltCallback(void);
 
-void rcInit(void);
+void InitRemoteControl(void);
 
 /*
 ****************************************************************************
@@ -21,7 +33,7 @@ void rcInit(void);
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.008f
 
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
-#define FRICTION_WHEEL_MAX_DUTY             1350
+#define FRICTION_WHEEL_MAX_DUTY             1250
 //mouse control parameters
 //#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
 //#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
@@ -175,4 +187,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val);
 void MouseShootControl(Mouse *mouse);
 void SetInputMode(Remote *rc);
 void SetFrictionWheelSpeed(uint16_t x);
+
+void zySetLeftMode(Remote *rc);
+uint8_t zyGetLeftPostion();
 #endif

@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : application_quaternion.h
+  * Description        : 四元数解算
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * IMU四元数解算到角度
+  ******************************************************************************
+  */
 #include "stdint.h"
 
 #include "utilities_tim.h"

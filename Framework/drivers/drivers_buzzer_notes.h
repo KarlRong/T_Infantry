@@ -1,7 +1,19 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_buzzer_notes.h
+  * Description        : 蜂鸣器驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 蜂鸣器音乐表格
+  ******************************************************************************
+  */
 #ifndef DRIVERS_BUZZER_NOTES_H
 #define DRIVERS_BUZZER_NOTES_H
 
-#include "stdint.h"
+#include <stdint.h>
 
 #define L1	262
 #define L1U	277

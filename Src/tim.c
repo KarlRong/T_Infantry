@@ -45,6 +45,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
 
+#include "gpio.h"
+
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -231,27 +233,30 @@ void MX_TIM4_Init(void)
 /* TIM5 init function */
 void MX_TIM5_Init(void)
 {
-  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_Encoder_InitTypeDef sConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
   TIM_OC_InitTypeDef sConfigOC;
 
   htim5.Instance = TIM5;
   htim5.Init.Prescaler = 0;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 0;
+  htim5.Init.Period = 0xffff;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
   if (HAL_TIM_PWM_Init(&htim5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_FALLING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_FALLING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim5, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
@@ -267,16 +272,6 @@ void MX_TIM5_Init(void)
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  if (HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
   if (HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
@@ -472,17 +467,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM4_MspInit 1 */
   }
-  else if(tim_baseHandle->Instance==TIM5)
-  {
-  /* USER CODE BEGIN TIM5_MspInit 0 */
-
-  /* USER CODE END TIM5_MspInit 0 */
-    /* Peripheral clock enable */
-    __HAL_RCC_TIM5_CLK_ENABLE();
-  /* USER CODE BEGIN TIM5_MspInit 1 */
-
-  /* USER CODE END TIM5_MspInit 1 */
-  }
   else if(tim_baseHandle->Instance==TIM6)
   {
   /* USER CODE BEGIN TIM6_MspInit 0 */
@@ -519,6 +503,35 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE BEGIN TIM12_MspInit 1 */
 
   /* USER CODE END TIM12_MspInit 1 */
+  }
+}
+
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* tim_pwmHandle)
+{
+
+  GPIO_InitTypeDef GPIO_InitStruct;
+  if(tim_pwmHandle->Instance==TIM5)
+  {
+  /* USER CODE BEGIN TIM5_MspInit 0 */
+
+  /* USER CODE END TIM5_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM5_CLK_ENABLE();
+  
+    /**TIM5 GPIO Configuration    
+    PH11     ------> TIM5_CH2
+    PH10     ------> TIM5_CH1 
+    */
+    GPIO_InitStruct.Pin = EncoderB_Pin|EncoderA_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
+    HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN TIM5_MspInit 1 */
+
+  /* USER CODE END TIM5_MspInit 1 */
   }
 }
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
@@ -612,9 +625,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
   
     /**TIM5 GPIO Configuration    
     PI0     ------> TIM5_CH4
-    PH12     ------> TIM5_CH3
-    PH11     ------> TIM5_CH2
-    PH10     ------> TIM5_CH1 
+    PH12     ------> TIM5_CH3 
     */
     GPIO_InitStruct.Pin = GPIO_PIN_0;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -623,7 +634,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
     HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_11|GPIO_PIN_10;
+    GPIO_InitStruct.Pin = GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -717,17 +728,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM4_MspDeInit 1 */
   }
-  else if(tim_baseHandle->Instance==TIM5)
-  {
-  /* USER CODE BEGIN TIM5_MspDeInit 0 */
-
-  /* USER CODE END TIM5_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_TIM5_CLK_DISABLE();
-  /* USER CODE BEGIN TIM5_MspDeInit 1 */
-
-  /* USER CODE END TIM5_MspDeInit 1 */
-  }
   else if(tim_baseHandle->Instance==TIM6)
   {
   /* USER CODE BEGIN TIM6_MspDeInit 0 */
@@ -765,6 +765,33 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM12_MspDeInit 1 */
   }
+}
+
+void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim_pwmHandle)
+{
+
+  if(tim_pwmHandle->Instance==TIM5)
+  {
+  /* USER CODE BEGIN TIM5_MspDeInit 0 */
+
+  /* USER CODE END TIM5_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM5_CLK_DISABLE();
+  
+    /**TIM5 GPIO Configuration    
+    PI0     ------> TIM5_CH4
+    PH12     ------> TIM5_CH3
+    PH11     ------> TIM5_CH2
+    PH10     ------> TIM5_CH1 
+    */
+    HAL_GPIO_DeInit(GPIOI, GPIO_PIN_0);
+
+    HAL_GPIO_DeInit(GPIOH, GPIO_PIN_12|EncoderB_Pin|EncoderA_Pin);
+
+  }
+  /* USER CODE BEGIN TIM5_MspDeInit 1 */
+
+  /* USER CODE END TIM5_MspDeInit 1 */
 } 
 
 /* USER CODE BEGIN 1 */

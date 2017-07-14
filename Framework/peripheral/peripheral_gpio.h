@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : peripheral_gpio.h
+  * Description        : GPIO外部中断
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 红、绿LED，MPU外部中断相应GPIO口句柄重定义，提高可读性
+  ******************************************************************************
+  */
 #ifndef PERIPHERAL_GPIO_H
 #define PERIPHERAL_GPIO_H
 

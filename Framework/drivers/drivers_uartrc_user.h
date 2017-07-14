@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_uartrc_user.h
+  * Description        : 遥控器串口
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 遥控器用户函数
+  ******************************************************************************
+  */
 #ifndef DRIVERS_UARTRC_USER_H
 #define DRIVERS_UARTRC_USER_H
 

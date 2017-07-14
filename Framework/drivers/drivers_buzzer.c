@@ -1,12 +1,23 @@
+/**
+  ******************************************************************************
+  * File Name          : drivers_buzzer.c
+  * Description        : 蜂鸣器驱动函数
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * 不同的PWM波占空比对用不同音高，按表格依次改变频率可获得音乐
+  ******************************************************************************
+  */
+#include <cmsis_os.h>
+#include <tim.h>	
 #include "drivers_buzzer_low.h"
 #include "drivers_buzzer_user.h"
 #include "drivers_buzzer_notes.h"
 #include "drivers_buzzer_music.h"
-
 #include "peripheral_define.h"
 
-#include "cmsis_os.h"
-#include "tim.h"
 
 void myDelay(uint16_t time){
 	for(int i=0; i < time; i++)

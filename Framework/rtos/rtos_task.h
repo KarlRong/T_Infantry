@@ -1,3 +1,15 @@
+/**
+  ******************************************************************************
+  * File Name          : rtos_task.h
+  * Description        : FreeRTOS任务
+  ******************************************************************************
+  *
+  * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
+  * All rights reserved.
+  *
+  * RTOS任务句柄
+  ******************************************************************************
+  */
 #ifndef RTOS_TASK_H
 #define RTOS_TASK_H
 
@@ -14,6 +26,7 @@ extern osThreadId getCtrlUartTaskHandle;
 //Motor
 extern osThreadId GMControlTaskHandle;
 extern osThreadId TimerTaskHandle;
+extern osThreadId PlateTaskHandle;
 
 extern osThreadId CMGMCanTransmitTaskHandle;
 extern osThreadId AMCanTransmitTaskHandle;
