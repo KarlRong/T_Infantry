@@ -189,5 +189,5 @@ void SetInputMode(Remote *rc);
 void SetFrictionWheelSpeed(uint16_t x);
 
 void zySetLeftMode(Remote *rc);
-uint8_t zyGetLeftPostion();
+unsigned int zyGetLeftPostion();
 #endif

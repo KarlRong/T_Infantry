@@ -68,7 +68,7 @@ FrictionWheelState_e friction_wheel_state = FRICTION_WHEEL_OFF;
 volatile Shoot_State_e shootState = NOSHOOTING; 
 InputMode_e inputmode = REMOTE_INPUT;  
 
-uint8_t zyLeftPostion; //大符用左拨杆位置
+unsigned int zyLeftPostion; //大符用左拨杆位置
 
 RampGen_t frictionRamp = RAMP_GEN_DAFAULT;  
 RampGen_t LRSpeedRamp = RAMP_GEN_DAFAULT;   
@@ -171,7 +171,7 @@ void zySetLeftMode(Remote *rc)
 		zyLeftPostion = 2;
 	}	
 }
-uint8_t zyGetLeftPostion()
+unsigned int zyGetLeftPostion()
 {
 	return zyLeftPostion;
 }

@@ -30,7 +30,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	}else if(UartHandle == &MANIFOLD_UART){
 		//妙算通信串口
 		//自定义协议
-//		fw_printfln("manifold get!!!");
+		fw_printfln("manifold get!!!");
 		manifoldUartRxCpltCallback();
 	}
 	else if(UartHandle == &JUDGE_UART){

@@ -97,7 +97,7 @@ float nn =0;
 int16_t twist_target = 0;
 
 extern float zyYawTarget,zyPitchTarget;
-float yawRealAngle = 0.0f;//张雁调试大符,改成全局
+float yawRealAngle = 0.0;//张雁调试大符
 
 void CMGMControlTask(void const * argument){
 	while(1)

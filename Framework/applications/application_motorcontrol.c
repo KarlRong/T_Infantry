@@ -74,14 +74,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		GMYAWIntensity = 0;
 		GMPITCHIntensity = 0;
 	}
-  
-//  if(GetWorkState() == RUNE_STATE)
-//	{
-//		CMFLIntensity = 0;
-//		CMFRIntensity = 0;
-//		CMBLIntensity = 0;
-//		CMBRIntensity = 0;
-//	}
+
 	if(CMReady == 0xF)
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(CMTxIOPool);

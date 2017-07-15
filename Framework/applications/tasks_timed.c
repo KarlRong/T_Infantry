@@ -71,7 +71,7 @@ extern uint8_t g_isGYRO_Rested;
 extern float pitchRealAngle;
 extern float gYroZs;
 extern float g_yawAngleTarget;
-extern float yawRealAngle;//???WHAT?
+extern float yawRealAngle;
 
 extern uint8_t JUDGE_STATE;
 
@@ -87,12 +87,7 @@ extern uint8_t JUDGE_State;
 static uint32_t s_time_tick_2ms = 0;
 
 FrictionWheelState_e friction_wheel_stateZY = FRICTION_WHEEL_OFF;
-extern RampGen_t frictionRamp ;
-static uint8_t zyBigRuneMSG[4]={0xFF,0x02,0x00,0xFE};//大符
-static uint8_t zyLittleRuneMSG[4]={0xFF,0x01,0x00,0xFE};
-static uint8_t zyReadyRuneMSG[4]={0xFF,0x00,0x00,0xFE};
-uint8_t zyRuneMode=1;
-extern float yawAngleTarget;//张雁大符
+extern RampGen_t frictionRamp ;//张雁大符
 
 void Timer_2ms_lTask(void const * argument)
 {
@@ -197,22 +192,9 @@ void WorkStateFSM(void)
 				g_workState = STOP_STATE;
 			}
 			//ZY
-			else if(GetInputMode()==KEY_MOUSE_INPUT&&zyGetLeftPostion()!=1)//&&(RC_CtrlData.rc.s1==3))
+			else if(GetInputMode()==KEY_MOUSE_INPUT&&zyGetLeftPostion()==3)//&&(RC_CtrlData.rc.s1==3))
 			{
-				if(zyGetLeftPostion()==3)
-				{
-					HAL_UART_Transmit(&MANIFOLD_UART , zyLittleRuneMSG, 4, 0xFFFF);
-					
-					g_workState= RUNE_STATE;
-					zyRuneMode=3;
-				}
-				else if(zyGetLeftPostion()==2)
-				{
-					HAL_UART_Transmit(&MANIFOLD_UART, zyBigRuneMSG, 4, 0xFFFF);
-					
-					g_workState= RUNE_STATE;
-					zyRuneMode=2;
-				}
+				g_workState= RUNE_STATE;
 			}
 			//ZY
 		}break;
@@ -222,57 +204,25 @@ void WorkStateFSM(void)
 			{
 				g_workState = PREPARE_STATE;   
 			}
-			else if(GetInputMode()==KEY_MOUSE_INPUT&&zyGetLeftPostion()!=1)//&&(RC_CtrlData.rc.s1==3))
+			else if(GetInputMode()==KEY_MOUSE_INPUT&&zyGetLeftPostion()==3)//&&(RC_CtrlData.rc.s1==3))
 			{
-				if(zyGetLeftPostion()==3)
-				{
-					HAL_UART_Transmit(&MANIFOLD_UART , zyLittleRuneMSG, 4, 0xFFFF);
-					g_workState= RUNE_STATE;
-					zyRuneMode=3;
-				}
-				else if(zyGetLeftPostion()==2)
-				{
-					HAL_UART_Transmit(&MANIFOLD_UART, zyBigRuneMSG, 4, 0xFFFF);
-					g_workState= RUNE_STATE;
-					zyRuneMode=2;
-				}
+				g_workState= RUNE_STATE;
 			}
 		}break;
 		case RUNE_STATE:
 		{
-			if(zyGetLeftPostion()!=zyRuneMode)
+			if(zyGetLeftPostion()!=3)
 			{
-				if(zyGetLeftPostion()==1)
-				{
-					//g_workState = PREPARE_STATE; 
-					g_workState = NORMAL_STATE; 
-					zyRuneMode=1;
-					yawAngleTarget=-ZGyroModuleAngle;
-					HAL_UART_Transmit(&MANIFOLD_UART , zyReadyRuneMSG, 4, 0xFFFF);
-					//LASER_OFF();
-					friction_wheel_stateZY = FRICTION_WHEEL_OFF;				  
-					SetFrictionWheelSpeed(1000); 
-					frictionRamp.ResetCounter(&frictionRamp);
-					SetShootState(NOSHOOTING);
-				}
-				else if(zyGetLeftPostion()==3)
-				{
-					HAL_UART_Transmit(&MANIFOLD_UART , zyLittleRuneMSG, 4, 0xFFFF);
-					zyRuneMode=3;
-				}
-				else
-				{
-					HAL_UART_Transmit(&MANIFOLD_UART , zyBigRuneMSG, 4, 0xFFFF);
-					zyRuneMode=2;
-				}
+				g_workState = PREPARE_STATE;  
+				//LASER_OFF();
+				friction_wheel_stateZY = FRICTION_WHEEL_OFF;				  
+				SetFrictionWheelSpeed(1000); 
+				frictionRamp.ResetCounter(&frictionRamp);
+				SetShootState(NOSHOOTING);
 			}
 			else if(GetInputMode()==REMOTE_INPUT)
 			{
-				//g_workState = PREPARE_STATE;
-				g_workState = NORMAL_STATE; 
-				zyRuneMode=1;
-				yawAngleTarget=-ZGyroModuleAngle;
-				HAL_UART_Transmit(&MANIFOLD_UART , zyReadyRuneMSG, 4, 0xFFFF);
+				g_workState = PREPARE_STATE;
 				if(friction_wheel_stateZY==FRICTION_WHEEL_ON||friction_wheel_stateZY==FRICTION_WHEEL_START_TURNNING)
 				{
 					//LASER_OFF();
@@ -285,9 +235,6 @@ void WorkStateFSM(void)
 			else if(GetInputMode() == STOP )
 			{
 				g_workState = STOP_STATE;
-				zyRuneMode=1;
-				yawAngleTarget=-ZGyroModuleAngle;
-				HAL_UART_Transmit(&MANIFOLD_UART, zyReadyRuneMSG, 4, 0xFFFF);
 				if(friction_wheel_stateZY==FRICTION_WHEEL_ON||friction_wheel_stateZY==FRICTION_WHEEL_START_TURNNING)
 				{
 					//LASER_OFF();

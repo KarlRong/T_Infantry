@@ -66,7 +66,7 @@ void manifoldUartRxCpltCallback(){
 		//fw_printfln("manifold callback:%x,%f,yawTarget:%f",*pData,zyYawAdd,zyYawTarget);
 		
 		ShootOneBullet();//拨盘啵一个
-//		fw_printfln("Shoot state:%f \t\n",ShootMotorPositionPID.ref);
+		fw_printfln("Shoot state:%f \t\n",ShootMotorPositionPID.ref);
 
 	}
 	else
