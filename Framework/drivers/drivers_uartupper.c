@@ -103,7 +103,7 @@ void manifoldUartRxCpltCallback(){
 void InitManifoldUart(){
 	ctrlData.Success = 1;  
 	//vRefreshLocation(0, 0);
-	zyLocationInit(1.0,7.5);//1号-2.0,6.1
+	zyLocationInit(1.0,8.0);//1号-2.0,6.1
 	if(HAL_UART_Receive_DMA(&MANIFOLD_UART, IOPool_pGetWriteData(ctrlUartIOPool)->ch, size_frame) != HAL_OK){
 		Error_Handler();
 		printf( "InitManifoldUart error" );
@@ -250,7 +250,7 @@ void vRefreshLocation(float yaw_center, float pitch_center){
 	Location_Number[8].pitch_position = pitch_center - dis_pitch;
 }
 
-float pAddZy=9,pMinusZy=7,yAddZy=10;
+float pAddZy=11,pMinusZy=6,yAddZy=11;
 void zyLocationInit(float yaw_center,float pitch_center)
 {
 	Location_Number[0].yaw_position = yaw_center + yAddZy;

@@ -192,7 +192,7 @@ void WorkStateFSM(void)
 				g_workState = STOP_STATE;
 			}
 			//ZY
-			else if(GetInputMode()==KEY_MOUSE_INPUT)//&&zyGetLeftPostion()==3)//&&(RC_CtrlData.rc.s1==3))
+			else if(GetInputMode()==KEY_MOUSE_INPUT&&zyGetLeftPostion()==3)//&&(RC_CtrlData.rc.s1==3))
 			{
 				g_workState= RUNE_STATE;
 			}
@@ -204,23 +204,23 @@ void WorkStateFSM(void)
 			{
 				g_workState = PREPARE_STATE;   
 			}
-			else if(GetInputMode()==KEY_MOUSE_INPUT)//&&zyGetLeftPostion()==3)//&&(RC_CtrlData.rc.s1==3))
+			else if(GetInputMode()==KEY_MOUSE_INPUT&&zyGetLeftPostion()==3)//&&(RC_CtrlData.rc.s1==3))
 			{
 				g_workState= RUNE_STATE;
 			}
 		}break;
 		case RUNE_STATE:
 		{
-//			if(zyGetLeftPostion()!=3)
-//			{
-//				g_workState = PREPARE_STATE;  
-//				//LASER_OFF();
-//				friction_wheel_stateZY = FRICTION_WHEEL_OFF;				  
-//				SetFrictionWheelSpeed(1000); 
-//				frictionRamp.ResetCounter(&frictionRamp);
-//				SetShootState(NOSHOOTING);
-//			}
-			if(GetInputMode()==REMOTE_INPUT)
+			if(zyGetLeftPostion()!=3)
+			{
+				g_workState = PREPARE_STATE;  
+				//LASER_OFF();
+				friction_wheel_stateZY = FRICTION_WHEEL_OFF;				  
+				SetFrictionWheelSpeed(1000); 
+				frictionRamp.ResetCounter(&frictionRamp);
+				SetShootState(NOSHOOTING);
+			}
+			else if(GetInputMode()==REMOTE_INPUT)
 			{
 				g_workState = PREPARE_STATE;
 				if(friction_wheel_stateZY==FRICTION_WHEEL_ON||friction_wheel_stateZY==FRICTION_WHEEL_START_TURNNING)
