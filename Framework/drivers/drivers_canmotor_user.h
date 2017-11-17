@@ -62,11 +62,12 @@ IOPoolDeclare(ZGYROTxIOPool, CanTxMsgTypeDef);
 
 
 void InitCanReception(void);
-void Set_CM_Speed(int16_t cm1_iq, int16_t cm2_iq, int16_t cm3_iq, int16_t cm4_iq);
 void TransmitCMGMCan(void);
 void TransmitGYROCAN(void);
-void CANReceiveMsgProcess_820R(Motor820RRxMsg_t * msg,volatile Encoder * CMxEncoder);
-void EncoderProcess(volatile Encoder *v, Motor820RRxMsg_t * msg);
-void GetEncoderBias(volatile Encoder *v, Motor820RRxMsg_t * msg);
+
+//void Set_CM_Speed(int16_t cm1_iq, int16_t cm2_iq, int16_t cm3_iq, int16_t cm4_iq);
+//void CANReceiveMsgProcess_820R(Motor820RRxMsg_t * msg,volatile Encoder * CMxEncoder);
+//void EncoderProcess(volatile Encoder *v, Motor820RRxMsg_t * msg);//未用到
+//void GetEncoderBias(volatile Encoder *v, Motor820RRxMsg_t * msg);//未用到
 
 #endif

@@ -59,58 +59,15 @@ void playMusicWhenInit(void){
 			PLAYWHENINIT(SuperMario[i].note, SuperMario[i].time);
 	}
 	HAL_TIM_PWM_Stop(&BUZZER_TIM, TIM_CHANNEL_1);
-	
-//	HAL_TIM_PWM_Start(&BUZZER_TIM, TIM_CHANNEL_1);
-//	for(int i = 0; i < sizeof(Intel) / sizeof(MusicNote); i++){
-//			PLAYWHENINIT(Intel[i].note, Intel[i].time);
-//	}
-//	HAL_TIM_PWM_Stop(&BUZZER_TIM, TIM_CHANNEL_1);
+
 	
 }
 
+//没用到
 void playMusicSuperMario(void){
 	HAL_TIM_PWM_Start(&BUZZER_TIM, TIM_CHANNEL_1);
 	for(int i = 0; i < sizeof(SuperMario) / sizeof(MusicNote); i++){
 			PLAY(SuperMario[i].note, SuperMario[i].time);
 	}
 	HAL_TIM_PWM_Stop(&BUZZER_TIM, TIM_CHANNEL_1);
-}
-
-void buzzerTask(void const * argument){
-	//HAL_TIM_PWM_Start(&BUZZER_TIM, TIM_CHANNEL_1);
-	while(1){
-//		for(int i = 0; i < sizeof(SuperMario) / sizeof(MusicNote); i++){
-//			PLAY(SuperMario[i].note, SuperMario[i].time);
-//		}
-//		STOP(1000);
-		
-//		for(int i = 0; i != 12; i++){
-//			PLAY(notes_low[i], 500);
-//		}
-//		STOP(1000);
-//		for(int i = 0; i != 12; i++){
-//			PLAY(notes_mid[i], 500);
-//		}
-//		STOP(1000);
-//		for(int i = 0; i != 12; i++){
-//			PLAY(notes_high[i], 500);
-//		}
-//		STOP(1000);
-//		SET_BUZZER_FREQUENCY(523);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(587);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(659);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(698);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(784);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(880);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(988);
-//		osDelay(1000);
-//		SET_BUZZER_FREQUENCY(1046);
-//		osDelay(1000);
-	}
 }

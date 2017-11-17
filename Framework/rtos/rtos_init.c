@@ -43,7 +43,7 @@ void rtos_InitInfantry()
 	
 	plateMotorInit();//初始化拨盘电机(电机PWM，编码器计数)
   InitUserTimer();//初始化用户定时器：摩擦轮PWM，舵机PWM
-//	Init_Quaternion();//四元数初始化
+
 	fw_printfln("init success");//串口发送成功初始化成功 printf line
 }
 

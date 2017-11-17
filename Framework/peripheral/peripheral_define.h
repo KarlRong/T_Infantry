@@ -14,7 +14,6 @@
 #ifndef PERIPHERAL_DEFINE_H
 #define PERIPHERAL_DEFINE_H
 
-//#include "peripheral_define.h"
 
 #define BUZZER_TIM htim3
 

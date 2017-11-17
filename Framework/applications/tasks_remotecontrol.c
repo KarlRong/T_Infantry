@@ -68,7 +68,7 @@ extern WorkState_e g_workState;//张雁大符
 
 void RControlTask(void const * argument){
 	uint8_t data[18];
-	static int countwhile = 0;
+//	static int countwhile = 0;
 	static TickType_t lastcount_rc;
 	static TickType_t thiscount_rc;
 	static uint8_t first_frame = 0;
@@ -77,6 +77,7 @@ void RControlTask(void const * argument){
 		{
 			MX_IWDG_Init();
 		}
+		//一旦遥控信号中断，此进程就会被一直阻塞，就会引起看门狗复位
 		HAL_IWDG_Refresh(&hiwdg);
 		/*等待串口接收中断回调函数释放信号量*/
 		xSemaphoreTake(xSemaphore_rcuart, osWaitForever);
@@ -104,8 +105,8 @@ void RControlTask(void const * argument){
 				HAL_UART_AbortReceive(&RC_UART);
 				HAL_UART_Receive_DMA(&RC_UART, IOPool_pGetWriteData(rcUartIOPool)->ch, 18);
 
-				if(countwhile >= 300){
-					countwhile = 0;
+//				if(countwhile >= 300){
+//					countwhile = 0;
 //			    fw_printf("ch0 = %d | ", RC_CtrlData.rc.ch0);
 //				fw_printf("ch1 = %d | ", RC_CtrlData.rc.ch1);
 //				fw_printf("ch2 = %d | ", RC_CtrlData.rc.ch2);
@@ -122,9 +123,9 @@ void RControlTask(void const * argument){
 //				
 //				fw_printf("key = %d \r\n", RC_CtrlData.key.v);
 //				fw_printf("===========\r\n");
-				}else{
-					countwhile++;
-				}
+//				}else{
+//					countwhile++;
+//				}
 	    }
 		}
 		else{
@@ -140,34 +141,39 @@ void RControlTask(void const * argument){
 }
 
 bool g_switchRead = 0;
-
+//接收机会一次性把遥控器本身、鼠标、键盘的数据全部接收，我们需要根据输入模式来有选择地使用这些数据
 void RemoteDataProcess(uint8_t *pData)
 {
 	if(pData == NULL)
 	{
 			return;
 	}
+	//遥控器 11*4 + 2*2 = 48，需要 6 Bytes
+	//16位，只看低11位
 	RC_CtrlData.rc.ch0 = ((int16_t)pData[0] | ((int16_t)pData[1] << 8)) & 0x07FF; 
 	RC_CtrlData.rc.ch1 = (((int16_t)pData[1] >> 3) | ((int16_t)pData[2] << 5)) & 0x07FF;
 	RC_CtrlData.rc.ch2 = (((int16_t)pData[2] >> 6) | ((int16_t)pData[3] << 2) |
 											 ((int16_t)pData[4] << 10)) & 0x07FF;
 	RC_CtrlData.rc.ch3 = (((int16_t)pData[4] >> 1) | ((int16_t)pData[5]<<7)) & 0x07FF;
 	
+	//16位，只看最低两位
 	RC_CtrlData.rc.s1 = ((pData[5] >> 4) & 0x000C) >> 2;
 	RC_CtrlData.rc.s2 = ((pData[5] >> 4) & 0x0003);
 
+	//鼠标需要 8 Bytes
 	RC_CtrlData.mouse.x = ((int16_t)pData[6]) | ((int16_t)pData[7] << 8);
 	RC_CtrlData.mouse.y = ((int16_t)pData[8]) | ((int16_t)pData[9] << 8);
 	RC_CtrlData.mouse.z = ((int16_t)pData[10]) | ((int16_t)pData[11] << 8);    
 
 	RC_CtrlData.mouse.press_l = pData[12];
 	RC_CtrlData.mouse.press_r = pData[13];
-
+	
+	//键盘需要 2 Bytes = 16 bits ，每一位对应一个键
 	RC_CtrlData.key.v = ((int16_t)pData[14]) | ((int16_t)pData[15] << 8);//16 bits correspond to 16 keys
 	
 	SetInputMode(&RC_CtrlData.rc);
 	
-		/*左上角拨杆状态获取*/
+	/*左上角拨杆状态获取*/	//用于遥控器发射控制
 	GetRemoteSwitchAction(&g_switch1, RC_CtrlData.rc.s1);
 	g_switchRead = 1;
 	
@@ -240,6 +246,7 @@ extern uint8_t waitRuneMSG[4];
 extern uint8_t littleRuneMSG[4];
 extern uint8_t bigRuneMSG[4];
 
+//遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
 	//++delayCnt;
@@ -302,14 +309,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x80)	//key:e  检测第8位是不是1
 		{
-			setLaunchMode(SINGLE_MULTI);
-//			if(delayCnt>500)
-//			{
-//				toggleLaunchMode();
-//				delayCnt = 0;
-//			}
+			setLaunchMode(SINGLE_MULTI);//按e单发(自动步枪、半自动步枪)
 		}
-		if(key->v & 0x40)	//key:q
+		if(key->v & 0x40)	//key:q  按q四连发(霰弹枪)
 		{
 			setLaunchMode(CONSTENT_4);
 		}

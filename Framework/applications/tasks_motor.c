@@ -70,11 +70,13 @@ PID_Regulator_t CM2SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
-extern uint8_t g_isGYRO_Rested;
+extern uint8_t g_isGYRO_Rested;//没用到
+
 //陀螺仪角速度
 extern float gYroXs, gYroYs, gYroZs;
+
 //外接单轴陀螺仪角度
-extern float ZGyroModuleAngle;
+extern float ZGyroModuleAngle;	//这就是yawRealAngle
 float yawAngleTarget = 0.0;
 float gap_angle = 0.0;
 
@@ -139,7 +141,7 @@ void ControlYaw(void)
 			IOPool_getNextRead(GMYAWRxIOPool, 0); 
 	//		fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
 			yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yawZeroAngle) * 360 / 8192.0f;
-			NORMALIZE_ANGLE180(yawRealAngle);
+			NORMALIZE_ANGLE180(yawRealAngle);//正规化到±180°
 			
 			if(GetWorkState() == NORMAL_STATE) 
 			{

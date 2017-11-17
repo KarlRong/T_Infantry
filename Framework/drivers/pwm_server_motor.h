@@ -10,6 +10,8 @@
   * 初始化，设定角度
   ******************************************************************************
   */
+	
+/*
 #ifndef _pwm_server_motor_
 #define _pwm_server_motor_
 #include "stm32f4xx_hal.h"
@@ -23,3 +25,4 @@ void pwm_server_motor_deinit(uint8_t motorIndex);
 void pwm_server_motor_set_angle(uint8_t motorIndex,float angle);
 
 #endif
+*/

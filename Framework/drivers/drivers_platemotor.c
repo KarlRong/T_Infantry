@@ -23,9 +23,7 @@ void plateMotorInit(void){
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
 	HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_ALL);
-	__HAL_TIM_SET_COUNTER(&htim5, 0x0);
-	fw_printf("PMInit Success\t\n");
-	
+	__HAL_TIM_SET_COUNTER(&htim5, 0x0);	
 }
 
 void setPlateMotorDir(RotateDir_e dir)

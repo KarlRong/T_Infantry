@@ -32,12 +32,11 @@
 #include "tasks_motor.h"
 #include "drivers_sonar_low.h"
 #include "tasks_platemotor.h"
+#include "utilities_debug.h"
+
 //#include "drivers_mpu6050_low.h"
 //#include "tasks_mpu6050.h"
-
 //#include "tasks_testtasks.h"
-
-#include "utilities_debug.h"
 
 osThreadId ledGreenTaskHandle;
 osThreadId ledRedTaskHandle;
@@ -58,7 +57,6 @@ osThreadId AMCanTransmitTaskHandle;
 osThreadId sonarTaskHandle;
 
 //extern osThreadId testFlashTaskHandle;
-
 //#include "drivers_flash.h"
 //osThreadId testFlashTaskHandle;
 
@@ -76,10 +74,6 @@ void rtos_AddThreads()
   ledGreenTaskHandle = osThreadCreate(osThread(ledGreenTask), NULL);
 	osThreadDef(ledRedTask, ledRedTask, osPriorityNormal, 0, 128);
   ledRedTaskHandle = osThreadCreate(osThread(ledRedTask), NULL);
-	
-//蜂鸣器任务，暂时无用
-//	osThreadDef(buzzerTask, buzzerTask, osPriorityNormal, 0, 128);
-//  buzzerTaskHandle = osThreadCreate(osThread(buzzerTask), NULL);
 	
 //IMU数据获取，角速度(用于云台电机速度反馈)，角度(需四元数解算)
 	osThreadDef(IMUTask, IMUTask, osPriorityHigh, 0, 256);
@@ -100,8 +94,8 @@ void rtos_AddThreads()
 //拨盘电机任务 
 	osThreadDef(Plate_Task, PlateMotorTask, osPriorityAboveNormal, 0, 300);
   PlateTaskHandle = osThreadCreate(osThread(Plate_Task), NULL);
+	
 //2ms定时任务，状态机切换，调试信息输出等
-
 	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
   TimerTaskHandle = osThreadCreate(osThread(Timer_Task), NULL);
 

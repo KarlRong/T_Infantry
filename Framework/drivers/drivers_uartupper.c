@@ -29,8 +29,6 @@
 
 NaiveIOPoolDefine(ctrlUartIOPool, {0});
 
-extern PID_Regulator_t ShootMotorPositionPID;
-
 xdata_ctrlUart ctrlData; 
 
 float zyYawAdd,zyPitchAdd,zyYawTarget,zyPitchTarget;
@@ -47,8 +45,6 @@ extern uint16_t checkRecTime;
 
 void manifoldUartRxCpltCallback()
 {
-	//ShootOneBullet();
-	
 	static portBASE_TYPE xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
 

@@ -121,6 +121,7 @@ uint32_t myVerify_CRC16_Check_Sum(uint8_t *pchMessage, uint32_t dwLength)
     pchMessage[dwLength - 1]);
 }
 
+//开启串口DMA接收，一次接收一个字节，串口接收到数据后会直接存入temp_judge  qzk
 uint8_t tmp_judge;
 void InitJudgeUart(void){
 	if(HAL_UART_Receive_DMA(&JUDGE_UART, &tmp_judge, 1) != HAL_OK){
@@ -150,7 +151,7 @@ void judgeUartRxCpltCallback(void)
 			
 			if(buffercnt == 44)
 			{
-				if (myVerify_CRC16_Check_Sum(buffer, 44)) 
+				if (myVerify_CRC16_Check_Sum(buffer, 44)) //接收到规定量的字节数，就进行数据处理
 				{
 					Judge_Refresh();
 				}
@@ -160,7 +161,7 @@ void judgeUartRxCpltCallback(void)
 		}
 		else 
 		{
-			if(tmp_judge == 0xA5)
+			if(tmp_judge == 0xA5)//0xA5为起始传输字节(信号)
 			{
 				receiving = 1;
 				buffercnt = 0;
@@ -180,6 +181,7 @@ JudgeState_e JUDGE_State = OFFLINE;
 
 void Judge_Refresh(void)
 {
+	/*
 	//printf("verify OK\r\n");
 	
 //  mytGameInfo.remainTime = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
@@ -199,9 +201,11 @@ void Judge_Refresh(void)
 //      b[i] = (unsigned char)c[i];
 //  }
 ////  fw_printf("COutA: %f \r\n",mytGameInfo.realChassisOutA);
-  char c[4];
+	*/
+  //主控板从裁判系统中接收到的数据存在buffer中，本函数将buffer中表示剩余功率的部分放到mytGameInfo.remainPower中
+	char c[4];
 	unsigned char * b = (unsigned char*)&mytGameInfo.remainPower;
-  c[0] = buffer[38];c[1] = buffer[39];c[2] = buffer[40];c[3] = buffer[41];
+  c[0] = buffer[38];c[1] = buffer[39];c[2] = buffer[40];c[3] = buffer[41];//38--41是剩余功率
   for(int i = 0; i<4; i++){
       b[i] = (unsigned char)c[i];
   }

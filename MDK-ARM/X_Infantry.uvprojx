@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>STM32F427IIHx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.11.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IRAM(0x20000000-0x2002FFFF) IRAM2(0x10000000-0x1000FFFF) IROM(0x8000000-0x81FFFFF) CLOCK(25000000) FPU2 CPUTYPE("Cortex-M4")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -125,6 +125,47 @@
             <HexOffset>0</HexOffset>
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
+          <Simulator>
+            <UseSimulator>0</UseSimulator>
+            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
+            <RunToMain>1</RunToMain>
+            <RestoreBreakpoints>1</RestoreBreakpoints>
+            <RestoreWatchpoints>1</RestoreWatchpoints>
+            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
+            <RestoreFunctions>1</RestoreFunctions>
+            <RestoreToolbox>1</RestoreToolbox>
+            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
+            <RestoreSysVw>1</RestoreSysVw>
+          </Simulator>
+          <Target>
+            <UseTarget>1</UseTarget>
+            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
+            <RunToMain>1</RunToMain>
+            <RestoreBreakpoints>1</RestoreBreakpoints>
+            <RestoreWatchpoints>1</RestoreWatchpoints>
+            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
+            <RestoreFunctions>1</RestoreFunctions>
+            <RestoreToolbox>1</RestoreToolbox>
+            <RestoreTracepoints>1</RestoreTracepoints>
+            <RestoreSysVw>1</RestoreSysVw>
+          </Target>
+          <RunDebugAfterBuild>0</RunDebugAfterBuild>
+          <TargetSelection>11</TargetSelection>
+          <SimDlls>
+            <CpuDll></CpuDll>
+            <CpuDllArguments></CpuDllArguments>
+            <PeripheralDll></PeripheralDll>
+            <PeripheralDllArguments></PeripheralDllArguments>
+            <InitializationFile></InitializationFile>
+          </SimDlls>
+          <TargetDlls>
+            <CpuDll></CpuDll>
+            <CpuDllArguments></CpuDllArguments>
+            <PeripheralDll></PeripheralDll>
+            <PeripheralDllArguments></PeripheralDllArguments>
+            <InitializationFile></InitializationFile>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
+          </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
@@ -328,9 +369,6 @@
             <v6LangP>1</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
-            <v6Lto>0</v6Lto>
-            <v6WtE>0</v6WtE>
-            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
@@ -348,7 +386,6 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -705,16 +742,6 @@
               <FilePath>..\Framework\peripheral\peripheral_define.h</FilePath>
             </File>
             <File>
-              <FileName>peripheral_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_can.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_can.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_can.h</FilePath>
-            </File>
-            <File>
               <FileName>peripheral_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\peripheral\peripheral_gpio.c</FilePath>
@@ -725,29 +752,14 @@
               <FilePath>..\Framework\peripheral\peripheral_gpio.h</FilePath>
             </File>
             <File>
-              <FileName>peripheral_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_spi.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_spi.h</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_usart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_usart.h</FilePath>
-            </File>
-            <File>
               <FileName>peripheral_tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\peripheral\peripheral_tim.h</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
             </File>
             <File>
               <FileName>peripheral_laser.h</FileName>
@@ -788,11 +800,6 @@
               <FileName>utilities_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\utilities\utilities_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
             </File>
             <File>
               <FileName>utilities_tim.h</FileName>
@@ -838,11 +845,6 @@
               <FileName>drivers_imu_low.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_imu_low.h</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_imu_user.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_imu_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_buzzer_low.h</FileName>
