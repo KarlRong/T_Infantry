@@ -132,6 +132,27 @@ WorkState_e GetWorkState(void);
 	&PID_Reset,\
 }
 
-
+#define PUSH_MOTOR_POSITION_PID_DEFAULT \
+{\
+	0,\
+	0,\
+	{0,0},\
+	6.5f,\
+	0.0f,\
+	1.0f,\
+	0,\
+	0,\
+	0,\
+	4900,\
+	3500,\
+	1500,\
+	0,\
+	4950,\
+	0,\
+	0,\
+	0,\
+	&PID_Calc,\
+	&PID_Reset,\
+}
 #endif
 

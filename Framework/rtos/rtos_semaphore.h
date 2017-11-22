@@ -20,11 +20,11 @@
 extern osSemaphoreId CMGMCanHaveTransmitSemaphoreHandle;
 extern osSemaphoreId ZGYROCanHaveTransmitSemaphoreHandle;
 
-extern osSemaphoreId CMGMCanTransmitSemaphoreHandle;
-extern osSemaphoreId ZGYROCanTransmitSemaphoreHandle;
+extern osSemaphoreId Can1TransmitSemaphoreHandle;
+extern osSemaphoreId Can2TransmitSemaphoreHandle;
 
-extern osSemaphoreId CMGMCanRefreshSemaphoreHandle;
-extern osSemaphoreId ZGYROCanRefreshSemaphoreHandle;
+extern osSemaphoreId Can1RefreshSemaphoreHandle;
+extern osSemaphoreId Can2RefreshSemaphoreHandle;
 
 extern osSemaphoreId imurefreshGimbalSemaphoreHandle;
 

@@ -18,15 +18,13 @@
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	//fw_printfln("HAL_GPIO_EXTI_Callback %d", GPIO_Pin);
 	switch(GPIO_Pin){
 		case MPU_INT:
-			//fw_printfln("MPU_INT");
 			if(g_bInited == 1){
 				osSemaphoreRelease(refreshMPU6500SemaphoreHandle);
 			}
 			break;
-		case IST_INT:
+		case IST_INT:	//没用到
 			//osSemaphoreRelease(refreshMPU6050SemaphoreHandle);
 			break;
 		default:

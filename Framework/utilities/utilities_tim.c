@@ -24,7 +24,6 @@ uint64_t fw_getTimeMicros(void){
 
 void fw_userTimeEnable(void){
 	HAL_TIM_Base_Start_IT(&USER_TIM);
-	//__HAL_TIM_ENABLE(&USER_TIM);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){

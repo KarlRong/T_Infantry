@@ -39,6 +39,16 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t GMYAWIntensity = 0, GMPITCHIntensity = 0;
 	static int8_t GMReady = 0;
 	
+	static int16_t PM1Intensity = 0, PM2Intensity = 0;
+	static int8_t PMReady = 0;
+	
+	static int16_t AM1LIntensity = 0;
+	static int16_t AM1RIntensity = 0;
+	static int16_t AM2LIntensity = 0;
+	static int16_t AM2RIntensity = 0;
+	static int16_t AM3LIntensity = 0;
+	static int8_t AMReady = 0;
+	
 	switch(motorId)
 	{
 		case CMFL:
@@ -60,6 +70,29 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		case GMPITCH:
 			if(GMReady & 0x2){GMReady = 0x3;}else{GMReady |= 0x2;}
 			GMPITCHIntensity = Intensity;break;
+		
+		case PM1:
+			if(PMReady & 0x1){PMReady = 0x3;}else{PMReady |= 0x1;}
+			PM1Intensity = Intensity;break;
+		case PM2:
+			if(PMReady & 0x2){PMReady = 0x3;}else{PMReady |= 0x12;}
+			PM2Intensity = Intensity;break;
+		
+		case AM1L:
+			if(AMReady & 0x01){AMReady = 0x1F;}else{AMReady |= 0x01;}
+			AM1LIntensity = Intensity;break;
+		case AM1R:
+			if(AMReady & 0x02){AMReady = 0x1F;}else{AMReady |= 0x02;}
+			AM1RIntensity = Intensity;break;
+		case AM2L:
+			if(AMReady & 0x04){AMReady = 0x1F;}else{AMReady |= 0x04;}
+			AM2LIntensity = Intensity;break;
+		case AM2R:
+			if(AMReady & 0x08){AMReady = 0x1F;}else{AMReady |= 0x08;}
+			AM2RIntensity = Intensity;break;
+		case AM3L:
+			if(AMReady & 0x10){AMReady = 0x1F;}else{AMReady |= 0x10;}
+			AM3LIntensity = Intensity;break;
 			
 		default:
 			fw_Error_Handler();
@@ -67,15 +100,12 @@ void setMotor(MotorId motorId, int16_t Intensity){
 
 	//底盘功率限制，80W，能量槽满60，低于0掉血
 //    RestrictPower(&CMFLIntensity, &CMFRIntensity, &CMBLIntensity, &CMBRIntensity);
-	//ׁԶ٦Ê޸ѐ֧·О׆
-//ĬɏһО
 	float CM_current_max = CM_current_MAX;
 	float CMFLIntensity_max = CMFLIntensity_MAX;
 	float CMFRIntensity_max = CMFRIntensity_MAX;
 	float CMBLIntensity_max = CMBLIntensity_MAX;
 	float CMBRIntensity_max = CMBRIntensity_MAX;
 
-	//10-40ԵҽО׆
 	if (mytGameInfo.remainPower > 10 & mytGameInfo.remainPower < 40){
 			
 		 CM_current_max = CM_current_lower;
@@ -84,7 +114,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBLIntensity_max = CMBLIntensity_lower;
 		 CMBRIntensity_max = CMBRIntensity_lower;
 	}
-	//0-10ܫОО׆
+	
 	if (mytGameInfo.remainPower < 10 ){
 			
 		 CM_current_max = CM_current_bottom;
@@ -93,7 +123,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBLIntensity_max = CMBLIntensity_bottom;
 		 CMBRIntensity_max = CMBRIntensity_bottom;
 	}
-	//߸הһӬ
+
 	if (mytGameInfo.remainPower < 10 ){
 			
 		 CM_current_max = 0;
@@ -161,6 +191,13 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		CMBRIntensity = 0;
 		GMYAWIntensity = 0;
 		GMPITCHIntensity = 0;
+		PM1Intensity = 0;
+		PM2Intensity = 0;
+		AM1LIntensity = 0;
+		AM1RIntensity = 0;
+		AM2LIntensity = 0;
+		AM2RIntensity = 0;
+		AM3LIntensity = 0;
 	}
 
 	if(CMReady == 0xF)
@@ -179,7 +216,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
  	
 		IOPool_getNextWrite(CMTxIOPool);
 		
-		TransmitCMGMCan();
+		TransmitCAN1();
 		CMReady = 0;
     }
 	
@@ -198,7 +235,56 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		IOPool_getNextWrite(GMTxIOPool);
 		GMReady = 0;
 
-    TransmitCMGMCan();
+    TransmitCAN1();
+	}
+	
+	if(PMReady == 0x3)
+	{
+		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(PMTxIOPool);
+		pData->StdId = PM_TXID;
+		pData->Data[0] = (uint8_t)(PM1Intensity >> 8);
+		pData->Data[1] = (uint8_t)PM1Intensity;
+		pData->Data[2] = (uint8_t)(PM2Intensity >> 8);
+		pData->Data[3] = (uint8_t)PM2Intensity;
+		pData->Data[4] = 0;
+		pData->Data[5] = 0;
+		pData->Data[6] = 0;
+		pData->Data[7] = 0;
+		IOPool_getNextWrite(PMTxIOPool);
+		PMReady = 0;
+		
+		TransmitCAN1();
+	}
+	
+	if(AMReady == 0x1F)
+	{
+		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(AM1TxIOPool);
+		pData->StdId = AM1_TXID;
+		pData->Data[0] = (uint8_t)(AM1LIntensity >> 8);
+		pData->Data[1] = (uint8_t)AM1LIntensity;
+		pData->Data[2] = (uint8_t)(AM1RIntensity >> 8);
+		pData->Data[3] = (uint8_t)AM1RIntensity;
+		pData->Data[4] = 0;
+		pData->Data[5] = 0;
+		pData->Data[6] = 0;
+		pData->Data[7] = 0;
+		IOPool_getNextWrite(AM1TxIOPool);
+		
+		pData = IOPool_pGetWriteData(AM23TxIOPool);
+		pData->StdId = AM23_TXID;
+		pData->Data[0] = (uint8_t)(AM2LIntensity >> 8);
+		pData->Data[1] = (uint8_t)AM2LIntensity;
+		pData->Data[2] = (uint8_t)(AM2RIntensity >> 8);
+		pData->Data[3] = (uint8_t)AM2RIntensity;
+		pData->Data[4] = (uint8_t)(AM3LIntensity >> 8);
+		pData->Data[5] = (uint8_t)AM3LIntensity;
+		pData->Data[6] = 0;
+		pData->Data[7] = 0;
+		IOPool_getNextWrite(AM23TxIOPool);
+		
+		TransmitCAN2();
+		AMReady = 0;
+		
 	}
 }
 	
@@ -217,5 +303,5 @@ void GYRO_RST(void)
 	pData->Data[7] = 0x07;
 	IOPool_getNextWrite(ZGYROTxIOPool);
 
-	TransmitGYROCAN();
+	TransmitCAN2();
 }

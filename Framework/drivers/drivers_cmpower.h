@@ -30,7 +30,7 @@
 #define    CMFRIntensity_MAX   5900.f
 #define    CMBLIntensity_MAX   5900.f
 #define    CMBRIntensity_MAX   5900.f
-
+/*
 void RestrictPower(int16_t *intensity1, int16_t *intensity2, int16_t *intensity3, int16_t *intensity4);
-void dynamicUpperBound(void);
+void dynamicUpperBound(void);*/
 #endif
