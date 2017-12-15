@@ -10,12 +10,12 @@
       <TargetName>X_Infantry</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F427IIHx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.11.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IRAM(0x20000000-0x2002FFFF) IRAM2(0x10000000-0x1000FFFF) IROM(0x8000000-0x81FFFFF) CLOCK(25000000) FPU2 CPUTYPE("Cortex-M4")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -125,6 +125,47 @@
             <HexOffset>0</HexOffset>
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
+          <Simulator>
+            <UseSimulator>0</UseSimulator>
+            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
+            <RunToMain>1</RunToMain>
+            <RestoreBreakpoints>1</RestoreBreakpoints>
+            <RestoreWatchpoints>1</RestoreWatchpoints>
+            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
+            <RestoreFunctions>1</RestoreFunctions>
+            <RestoreToolbox>1</RestoreToolbox>
+            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
+            <RestoreSysVw>1</RestoreSysVw>
+          </Simulator>
+          <Target>
+            <UseTarget>1</UseTarget>
+            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
+            <RunToMain>1</RunToMain>
+            <RestoreBreakpoints>1</RestoreBreakpoints>
+            <RestoreWatchpoints>1</RestoreWatchpoints>
+            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
+            <RestoreFunctions>1</RestoreFunctions>
+            <RestoreToolbox>1</RestoreToolbox>
+            <RestoreTracepoints>1</RestoreTracepoints>
+            <RestoreSysVw>1</RestoreSysVw>
+          </Target>
+          <RunDebugAfterBuild>0</RunDebugAfterBuild>
+          <TargetSelection>11</TargetSelection>
+          <SimDlls>
+            <CpuDll></CpuDll>
+            <CpuDllArguments></CpuDllArguments>
+            <PeripheralDll></PeripheralDll>
+            <PeripheralDllArguments></PeripheralDllArguments>
+            <InitializationFile></InitializationFile>
+          </SimDlls>
+          <TargetDlls>
+            <CpuDll></CpuDll>
+            <CpuDllArguments></CpuDllArguments>
+            <PeripheralDll></PeripheralDll>
+            <PeripheralDllArguments></PeripheralDllArguments>
+            <InitializationFile></InitializationFile>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
+          </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
@@ -328,14 +369,11 @@
             <v6LangP>1</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
-            <v6Lto>0</v6Lto>
-            <v6WtE>0</v6WtE>
-            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;                                             ../Drivers/STM32F4xx_HAL_Driver/Inc;                                             ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                                             ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;                                             ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;                                             ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;                                             ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                                             ../Middlewares/Third_Party/FreeRTOS/Source/include;                                             ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                             ../Drivers/CMSIS/Include;                                             ..\Framework;                                             ..\Framework\utilities;                                             ..\Framework\rtos;                                             ..\Framework\drivers;                                             ..\Framework\applications;                                             ..\Framework\peripheral</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Drivers/CMSIS/Include;..\Framework;..\Framework\utilities;..\Framework\rtos;..\Framework\drivers;..\Framework\applications;..\Framework\peripheral</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -348,7 +386,6 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -582,86 +619,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User</GroupName>
-          <Files>
-            <File>
-              <FileName>freertos.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/freertos.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/main.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_conf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usbd_conf.c</FilePath>
-            </File>
-            <File>
-              <FileName>tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_cdc_if.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usbd_cdc_if.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_desc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usbd_desc.c</FilePath>
-            </File>
-            <File>
-              <FileName>can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/can.c</FilePath>
-            </File>
-            <File>
-              <FileName>gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/gpio.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usb_device.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>dma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/dma.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_msp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/stm32f4xx_hal_msp.c</FilePath>
-            </File>
-            <File>
-              <FileName>spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>iwdg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/iwdg.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Framework/RTOS</GroupName>
           <Files>
             <File>
@@ -705,16 +662,6 @@
               <FilePath>..\Framework\peripheral\peripheral_define.h</FilePath>
             </File>
             <File>
-              <FileName>peripheral_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_can.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_can.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_can.h</FilePath>
-            </File>
-            <File>
               <FileName>peripheral_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\peripheral\peripheral_gpio.c</FilePath>
@@ -725,34 +672,24 @@
               <FilePath>..\Framework\peripheral\peripheral_gpio.h</FilePath>
             </File>
             <File>
-              <FileName>peripheral_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_spi.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_spi.h</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_usart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_usart.h</FilePath>
-            </File>
-            <File>
               <FileName>peripheral_tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\peripheral\peripheral_tim.h</FilePath>
             </File>
             <File>
+              <FileName>peripheral_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
+            </File>
+            <File>
               <FileName>peripheral_laser.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\peripheral\peripheral_laser.h</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_sov.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_sov.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -790,14 +727,19 @@
               <FilePath>..\Framework\utilities\utilities_tim.c</FilePath>
             </File>
             <File>
-              <FileName>peripheral_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
-            </File>
-            <File>
               <FileName>utilities_tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\utilities\utilities_tim.h</FilePath>
+            </File>
+            <File>
+              <FileName>visualscope.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\utilities\visualscope.c</FilePath>
+            </File>
+            <File>
+              <FileName>visualscope.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\utilities\visualscope.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -838,11 +780,6 @@
               <FileName>drivers_imu_low.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_imu_low.h</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_imu_user.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_imu_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_buzzer_low.h</FileName>
@@ -933,21 +870,6 @@
               <FileName>drivers_flash.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_flash.h</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_sonar.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\drivers\drivers_sonar.c</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_sonar_low.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_sonar_low.h</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_sonar_user.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_sonar_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_ramp.h</FileName>
@@ -1094,10 +1016,105 @@
               <FileType>5</FileType>
               <FilePath>..\Framework\applications\tasks_platemotor.h</FilePath>
             </File>
+            <File>
+              <FileName>ReadMe.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ReadMe.txt</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_arm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_arm.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_arm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_arm.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Application/User</GroupName>
+          <Files>
+            <File>
+              <FileName>freertos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/freertos.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/main.c</FilePath>
+            </File>
+            <File>
+              <FileName>iwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/iwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usbd_conf.c</FilePath>
+            </File>
+            <File>
+              <FileName>tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usbd_cdc_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/can.c</FilePath>
+            </File>
+            <File>
+              <FileName>gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usb_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/stm32f4xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/stm32f4xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/spi.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

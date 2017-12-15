@@ -39,6 +39,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//血量
 		//底盘电压、电流
 		//能量槽*****重要，超功率掉血
-		judgeUartRxCpltCallback();
+		pidTuneRxCpltCallback();
+		//judgeUartRxCpltCallback();
 	}
 }   

@@ -17,6 +17,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+/*
 extern tGameInfo mytGameInfo;
 extern uint8_t JUDGE_State;
 
@@ -25,7 +26,9 @@ static float CMFLIntensity_max = CMFLIntensity_MAX;
 static float CMFRIntensity_max = CMFRIntensity_MAX;
 static float CMBLIntensity_max = CMBLIntensity_MAX;
 static float CMBRIntensity_max = CMBRIntensity_MAX;
+*/
 
+/*没用到
 void RestrictPower(int16_t *intensity1, int16_t *intensity2, int16_t *intensity3, int16_t *intensity4)
 {
 	//根据能量槽剩余做动态上限
@@ -94,4 +97,4 @@ void dynamicUpperBound()
 		 CMBRIntensity_max = 4500;
 	}
 //	fw_printfln("max%f",CM_current_max);
-}
+}*/

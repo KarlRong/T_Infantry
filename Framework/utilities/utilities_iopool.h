@@ -21,11 +21,11 @@
 	* NaiveIOPoolDefine(IOPOOL name, 初始化)在.c中
 	*
 	* 使用方法：
-	* 线程1使用IOPool_getNextWrite(ioPool)获得指向WritePool的指针并修改WritePool
+	* 线程1使用IOPool_pGetWriteData(ioPool)获得指向WritePool的指针并修改WritePool
   * 线程1修改WritePool完成后调用IOPool_getNextWrite(ioPool)，将WritePool数据复制到ExchangePool
 	* 线程2使用IOPool_hasNextRead(ioPool, id)查看ExchangePool是否有数据
-	* 若检测到有数据，线程2使用IOPool_hasNextRead(ioPool, id)将ExchangePool数据复制到ReadPool
-	* 最后，线程1使用IOPool_pGetReadData(ioPool, id)获得指向ReadPool的指针并读取数据
+	* 若检测到有数据，线程2使用IOPool_getNextRead(ioPool, id)将ExchangePool数据复制到ReadPool
+	* 最后，线程2使用IOPool_pGetReadData(ioPool, id)获得指向ReadPool的指针并读取数据
 	*
 	* 细节请查看具体使用
   ******************************************************************************

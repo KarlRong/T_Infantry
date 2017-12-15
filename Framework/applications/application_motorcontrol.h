@@ -16,7 +16,7 @@
 
 #include "stdint.h"
 
-typedef enum {CMFL, CMFR, CMBL, CMBR, GMYAW, GMPITCH} MotorId;
+typedef enum {CMFL, CMFR, CMBL, CMBR, GMYAW, GMPITCH, PM1, PM2, AM1L, AM1R, AM2L, AM2R, AM3L} MotorId;
 
 void setMotor(MotorId motorId, int16_t Intensity);
 void GYRO_RST(void);

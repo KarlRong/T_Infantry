@@ -232,7 +232,9 @@ uint8_t InitMPU6500(void)
   return 0;
 }
 
+/*
 //Get 10 axis data from MPU6500
+//没用到这个函数
 void IMU_Get_Data()
 {
   uint8_t mpu_buff[22];
@@ -255,9 +257,13 @@ void IMU_Get_Data()
   imu_data.mz=mpu_buff[19]<<8 |mpu_buff[18];
 	
 }
+*/
+
 
 float gYroXs, gYroYs, gYroZs;
 void IMUTask(void const * argument){
+	
+/*
 //	int16_t tmaxx, tmaxy, tmaxz;
 //	int16_t tminx, tminy, tminz;
 //	IMU_Get_Data();
@@ -269,7 +275,7 @@ void IMUTask(void const * argument){
 //	hspi5.Instance->CR1 &= 0XFFC7; //位3-5清零，用来设置波特率
 //	hspi5.Instance->CR1 |= SPI_BAUDRATEPRESCALER_4;//设置SPI速度
 //	__HAL_SPI_ENABLE(&hspi5); //使能SPI
-
+*/
 	
 	while(1){
 		//IMU_Get_Data();

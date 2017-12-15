@@ -37,7 +37,7 @@
 PID_Regulator_t ShootMotorPositionPID = SHOOT_MOTOR_POSITION_PID_DEFAULT;      //shoot motor
 PID_Regulator_t ShootMotorSpeedPID = SHOOT_MOTOR_SPEED_PID_DEFAULT;
 
-extern FrictionWheelState_e friction_wheel_stateZY;
+
 static int s_count_bullet = 0;
 int stuck = 0;	//卡弹标志位，未卡弹为false，卡弹为true
 LaunchMode_e launchMode = SINGLE_MULTI;
@@ -106,7 +106,7 @@ void PlateMotorTask(void const * argument)
 			ShootRefModify();
 		}
 		
-		if(GetFrictionState()==FRICTION_WHEEL_ON||friction_wheel_stateZY==FRICTION_WHEEL_ON)//拨盘转动前提条件：摩擦轮转动GetFrictionState()==FRICTION_WHEEL_ON,张雁加后面的条件
+		if(GetFrictionState()==FRICTION_WHEEL_ON)//拨盘转动前提条件：摩擦轮转动GetFrictionState()==FRICTION_WHEEL_ON,张雁加后面的条件
 		{
 			this_fdb = GetQuadEncoderDiff(); 
 			
